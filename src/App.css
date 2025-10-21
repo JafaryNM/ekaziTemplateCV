@@ -1,0 +1,11 @@
+body {
+  font-family: "EB Garamond", serif !important;
+}
+
+text-justify {
+  text-align: justify !important;
+}
+
+span.border.badge.text-dark.bg-light {
+  font-size: 10px !important;
+}
