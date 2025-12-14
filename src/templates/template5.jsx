@@ -574,7 +574,7 @@ export default function Template5() {
           font-weight: 800;
           letter-spacing: .2px;
           color: ${INK};
-          font-size: 34px;
+          font-size: 1.7em;
         }
         .headerWrap .bar {
           height: 20px;
