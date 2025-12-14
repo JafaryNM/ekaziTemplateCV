@@ -20,8 +20,8 @@ import {
 import "bootstrap/dist/css/bootstrap.min.css";
 import moment from "moment";
 
-const cvUrl = "https://ekazi.co.tz";
-const API = "https://ekazi.co.tz/api/cv/cv_builder/30750";
+const cvUrl = "https://api.ekazi.co.tz";
+const API = "https://api.ekazi.co.tz/api/cv/cv_builder/30750";
 const BRAND = "#ff6601";
 
 export default function Template14() {
@@ -176,7 +176,10 @@ export default function Template14() {
                   {knowledge.length ? (
                     knowledge.map((k, i) => (
                       <Badge key={i} pill bg="secondary" className="me-1 mb-1">
-                        {k?.knowledge?.knowledge_name}
+                        {(k?.knowledge?.knowledge_name || "")
+                          .replace(/^,+/, "") // remove leading commas if any
+                          .toLowerCase()
+                          .replace(/\b\w/g, (char) => char.toUpperCase())}
                       </Badge>
                     ))
                   ) : (
@@ -185,7 +188,7 @@ export default function Template14() {
                 </SkillCard>
               </Col>
               <Col md={6}>
-                <SkillCard title="Software" icon={<FiCpu />}>
+                {/* <SkillCard title="Software" icon={<FiCpu />}>
                   {software.length ? (
                     software.map((s, i) => (
                       <Badge key={i} pill bg="dark" className="me-1 mb-1">
@@ -195,10 +198,25 @@ export default function Template14() {
                   ) : (
                     <span className="text-secondary">—</span>
                   )}
+                </SkillCard> */}
+
+                <SkillCard title="Software" icon={<FiCpu />}>
+                  {software.length ? (
+                    software.map((k, i) => (
+                      <Badge key={i} pill bg="secondary" className="me-1 mb-1">
+                        {(k?.software?.software_name || "")
+                          .replace(/^,+/, "") // remove leading commas if any
+                          .toLowerCase()
+                          .replace(/\b\w/g, (char) => char.toUpperCase())}
+                      </Badge>
+                    ))
+                  ) : (
+                    <span className="text-secondary">—</span>
+                  )}
                 </SkillCard>
               </Col>
               <Col md={6}>
-                <SkillCard title="Culture" icon={<FiGlobe />}>
+                {/* <SkillCard title="Culture" icon={<FiGlobe />}>
                   {culture.length ? (
                     culture.map((c, i) => (
                       <Badge
@@ -213,10 +231,30 @@ export default function Template14() {
                   ) : (
                     <span className="text-secondary">—</span>
                   )}
+                </SkillCard> */}
+
+                <SkillCard title="Culture" icon={<FiGlobe />}>
+                  {culture.length ? (
+                    culture.map((k, i) => (
+                      <Badge
+                        key={i}
+                        pill
+                        style={{ backgroundColor: BRAND, color: "#fff" }}
+                        className="me-1 mb-1"
+                      >
+                        {(k?.culture?.culture_name || "")
+                          .replace(/^,+/, "") // remove leading commas if any
+                          .toLowerCase()
+                          .replace(/\b\w/g, (char) => char.toUpperCase())}
+                      </Badge>
+                    ))
+                  ) : (
+                    <span className="text-secondary">—</span>
+                  )}
                 </SkillCard>
               </Col>
               <Col md={6}>
-                <SkillCard title="Personality" icon={<FiUser />}>
+                {/* <SkillCard title="Personality" icon={<FiUser />}>
                   {personalities.length ? (
                     personalities.map((p, i) => (
                       <Badge
@@ -227,6 +265,21 @@ export default function Template14() {
                         className="me-1 mb-1"
                       >
                         {p?.personality?.personality_name}
+                      </Badge>
+                    ))
+                  ) : (
+                    <span className="text-secondary">—</span>
+                  )}
+                </SkillCard> */}
+
+                <SkillCard title="Personality" icon={<FiUser />}>
+                  {knowledge.length ? (
+                    personalities.map((k, i) => (
+                      <Badge key={i} pill bg="info" className="me-1 mb-1">
+                        {(k?.personality?.personality_name || "")
+                          .replace(/^,+/, "") // remove leading commas if any
+                          .toLowerCase()
+                          .replace(/\b\w/g, (char) => char.toUpperCase())}
                       </Badge>
                     ))
                   ) : (
