@@ -112,17 +112,22 @@ export default function Template4() {
   const linkedin = payload?.socials?.linkedin || "";
   const website = payload?.socials?.website || "";
 
-  const getLangName = (l) =>
-    l?.language?.language_name ?? (typeof l === "string" ? l : "—");
-  const getSkillName = (k) =>
-    k?.knowledge?.knowledge_name ?? (typeof k === "string" ? k : "—");
-  const getSoftName = (s) =>
-    s?.software?.software_name ?? (typeof s === "string" ? s : "—");
+  const capitalize = (text) =>
+    typeof text === "string"
+      ? text
+          .replace(/^,+/, "") // remove leading commas
+          .toLowerCase()
+          .replace(/\b\w/g, (char) => char.toUpperCase())
+      : "—";
+
+  const getLangName = (l) => capitalize(l?.language?.language_name ?? l);
+
+  const getSkillName = (k) => capitalize(k?.knowledge?.knowledge_name ?? k);
+
+  const getSoftName = (s) => capitalize(s?.software?.software_name ?? s);
+
   const getCultureName = (c) =>
-    c?.culture?.culture_name ??
-    c?.culture_name ??
-    c?.name ??
-    (typeof c === "string" ? c : "—");
+    capitalize(c?.culture?.culture_name ?? c?.culture_name ?? c?.name ?? c);
 
   const splitLines = (text = "") =>
     text
