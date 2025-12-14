@@ -23,8 +23,8 @@ import {
 import "bootstrap/dist/css/bootstrap.min.css";
 import moment from "moment";
 
-const API = "https://ekazi.co.tz/api/cv/cv_builder/30750";
-const CV_BASE = "https://ekazi.co.tz";
+const API = "https://api.ekazi.co.tz/api/cv/cv_builder/30750";
+const CV_BASE = "https://api.ekazi.co.tz";
 const BRAND = "#FF2D20";
 const BRAND_DARK = "#b32018";
 const BG_SOFT = "#fff7f6";
@@ -264,21 +264,56 @@ const Template8 = () => {
     };
   });
 
-  const chipsCulture = culture
-    .map((c) => c?.culture?.culture_name || c?.culture_name || c?.name)
-    .filter(Boolean);
-  const chipsPersonality = personalities
-    .map((p) => p?.personality?.personality_name)
-    .filter(Boolean);
-  const chipsSoftware = software
-    .map((s) => s?.software?.software_name || s?.software_name)
-    .filter(Boolean);
-  const chipsSkills = skills
-    .map((k) => k?.knowledge?.knowledge_name || k?.knowledge_name)
-    .filter(Boolean);
-  const chipsTools = tools
-    .map((t) => t?.tool?.tool_name || t?.tool_name)
-    .filter(Boolean);
+// ===== Flattened & Capitalized “chips” data =====
+const chipsCulture = culture
+  .map((c) =>
+    (c?.culture?.culture_name || c?.culture_name || c?.name || "")
+      .replace(/^,+/, "")
+      .trim()
+      .toLowerCase()
+      .replace(/\b\w/g, (char) => char.toUpperCase())
+  )
+  .filter(Boolean);
+
+const chipsPersonality = personalities
+  .map((p) =>
+    (p?.personality?.personality_name || "")
+      .replace(/^,+/, "")
+      .trim()
+      .toLowerCase()
+      .replace(/\b\w/g, (char) => char.toUpperCase())
+  )
+  .filter(Boolean);
+
+const chipsSoftware = software
+  .map((s) =>
+    (s?.software?.software_name || s?.software_name || "")
+      .replace(/^,+/, "")
+      .trim()
+      .toLowerCase()
+      .replace(/\b\w/g, (char) => char.toUpperCase())
+  )
+  .filter(Boolean);
+
+const chipsSkills = skills
+  .map((k) =>
+    (k?.knowledge?.knowledge_name || k?.knowledge_name || "")
+      .replace(/^,+/, "")
+      .trim()
+      .toLowerCase()
+      .replace(/\b\w/g, (char) => char.toUpperCase())
+  )
+  .filter(Boolean);
+
+const chipsTools = tools
+  .map((t) =>
+    (t?.tool?.tool_name || t?.tool_name || "")
+      .replace(/^,+/, "")
+      .trim()
+      .toLowerCase()
+      .replace(/\b\w/g, (char) => char.toUpperCase())
+  )
+  .filter(Boolean);
 
   return (
     <Container fluid className="p-0 bg-white">
