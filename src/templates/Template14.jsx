@@ -74,6 +74,7 @@ export default function Template14() {
   const culture = payload?.culture ?? [];
   const personalities = payload?.applicant_personality ?? [];
   const addresses = payload?.address ?? [];
+  const tools = payload?.tools ?? [];
 
   const phone =
     payload?.phone?.phone_number ||
@@ -105,14 +106,69 @@ export default function Template14() {
     return m.isValid() ? m.format("YYYY") : "";
   };
 
+  // ===== Flattened & Capitalized “chips” data =====
+  const chipsCulture = culture
+    .map((c) =>
+      (c?.culture?.culture_name || c?.culture_name || c?.name || "")
+        .replace(/^,+/, "")
+        .toLowerCase()
+        .replace(/\b\w/g, (char) => char.toUpperCase())
+    )
+    .filter(Boolean);
+
+  const chipsPersonality = personalities
+    .map((p) =>
+      (p?.personality?.personality_name || "")
+        .replace(/^,+/, "")
+        .toLowerCase()
+        .replace(/\b\w/g, (char) => char.toUpperCase())
+    )
+    .filter(Boolean);
+
+  const chipsSoftware = software
+    .map((s) =>
+      (s?.software?.software_name || s?.software_name || "")
+        .replace(/^,+/, "")
+        .toLowerCase()
+        .replace(/\b\w/g, (char) => char.toUpperCase())
+    )
+    .filter(Boolean);
+
+  const chipsSkills = knowledge
+    .map((k) =>
+      (k?.knowledge?.knowledge_name || k?.knowledge_name || "")
+        .replace(/^,+/, "")
+        .toLowerCase()
+        .replace(/\b\w/g, (char) => char.toUpperCase())
+    )
+    .filter(Boolean);
+
+  const chipsTools = tools
+    .map((t) =>
+      (t?.tool?.tool_name || t?.tool_name || "")
+        .replace(/^,+/, "")
+        .toLowerCase()
+        .replace(/\b\w/g, (char) => char.toUpperCase())
+    )
+    .filter(Boolean);
+
   return (
     <Container
       fluid
-      className="d-flex justify-content-center align-items-start py-5 px-3 px-md-5"
-      style={{ minHeight: "100vh", backgroundColor: "#f8f9fa" }}
+      className="p-0"
+      style={{
+        width: "210mm",
+        minHeight: "297mm",
+        margin: "auto",
+        backgroundColor: "#000",
+        padding: "5mm",
+        fontFamily:
+          '"Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+        boxShadow: "0 0 5px rgba(0,0,0,0.2)",
+      }}
     >
       <Card
-        className="border-0 shadow-lg overflow-hidden w-100"
+        className="border-0 shadow-lg overflow-hidden w-100 a4-card"
         style={{ maxWidth: "1000px", borderRadius: "12px" }}
       >
         {/* Font Load */}
@@ -174,12 +230,14 @@ export default function Template14() {
               <Col md={6}>
                 <SkillCard title="Knowledge" icon={<FiStar />}>
                   {knowledge.length ? (
-                    knowledge.map((k, i) => (
-                      <Badge key={i} pill bg="secondary" className="me-1 mb-1">
-                        {(k?.knowledge?.knowledge_name || "")
-                          .replace(/^,+/, "") // remove leading commas if any
-                          .toLowerCase()
-                          .replace(/\b\w/g, (char) => char.toUpperCase())}
+                    chipsSkills.map((txt, i) => (
+                      <Badge
+                        key={i}
+                        pill
+                        bg="secondary"
+                        className="me-1 mb-1 skill-badge"
+                      >
+                        {txt}
                       </Badge>
                     ))
                   ) : (
@@ -188,26 +246,16 @@ export default function Template14() {
                 </SkillCard>
               </Col>
               <Col md={6}>
-                {/* <SkillCard title="Software" icon={<FiCpu />}>
-                  {software.length ? (
-                    software.map((s, i) => (
-                      <Badge key={i} pill bg="dark" className="me-1 mb-1">
-                        {s?.software?.software_name}
-                      </Badge>
-                    ))
-                  ) : (
-                    <span className="text-secondary">—</span>
-                  )}
-                </SkillCard> */}
-
                 <SkillCard title="Software" icon={<FiCpu />}>
                   {software.length ? (
-                    software.map((k, i) => (
-                      <Badge key={i} pill bg="secondary" className="me-1 mb-1">
-                        {(k?.software?.software_name || "")
-                          .replace(/^,+/, "") // remove leading commas if any
-                          .toLowerCase()
-                          .replace(/\b\w/g, (char) => char.toUpperCase())}
+                    chipsSoftware.map((txt, i) => (
+                      <Badge
+                        key={i}
+                        pill
+                        bg="secondary"
+                        className="me-1 mb-1 skill-badge"
+                      >
+                        {txt}
                       </Badge>
                     ))
                   ) : (
@@ -216,36 +264,16 @@ export default function Template14() {
                 </SkillCard>
               </Col>
               <Col md={6}>
-                {/* <SkillCard title="Culture" icon={<FiGlobe />}>
-                  {culture.length ? (
-                    culture.map((c, i) => (
-                      <Badge
-                        key={i}
-                        pill
-                        style={{ backgroundColor: BRAND, color: "#fff" }}
-                        className="me-1 mb-1"
-                      >
-                        {c?.culture?.culture_name}
-                      </Badge>
-                    ))
-                  ) : (
-                    <span className="text-secondary">—</span>
-                  )}
-                </SkillCard> */}
-
                 <SkillCard title="Culture" icon={<FiGlobe />}>
                   {culture.length ? (
-                    culture.map((k, i) => (
+                    chipsCulture.map((txt, i) => (
                       <Badge
                         key={i}
                         pill
                         style={{ backgroundColor: BRAND, color: "#fff" }}
-                        className="me-1 mb-1"
+                        className="me-1 mb-1 skill-badge"
                       >
-                        {(k?.culture?.culture_name || "")
-                          .replace(/^,+/, "") // remove leading commas if any
-                          .toLowerCase()
-                          .replace(/\b\w/g, (char) => char.toUpperCase())}
+                        {txt}
                       </Badge>
                     ))
                   ) : (
@@ -254,32 +282,16 @@ export default function Template14() {
                 </SkillCard>
               </Col>
               <Col md={6}>
-                {/* <SkillCard title="Personality" icon={<FiUser />}>
-                  {personalities.length ? (
-                    personalities.map((p, i) => (
+                <SkillCard title="Personality" icon={<FiUser />}>
+                  {knowledge.length ? (
+                    chipsPersonality.map((txt, i) => (
                       <Badge
                         key={i}
                         pill
                         bg="info"
-                        text="dark"
-                        className="me-1 mb-1"
+                        className="me-1 mb-1 skill-badge"
                       >
-                        {p?.personality?.personality_name}
-                      </Badge>
-                    ))
-                  ) : (
-                    <span className="text-secondary">—</span>
-                  )}
-                </SkillCard> */}
-
-                <SkillCard title="Personality" icon={<FiUser />}>
-                  {knowledge.length ? (
-                    personalities.map((k, i) => (
-                      <Badge key={i} pill bg="info" className="me-1 mb-1">
-                        {(k?.personality?.personality_name || "")
-                          .replace(/^,+/, "") // remove leading commas if any
-                          .toLowerCase()
-                          .replace(/\b\w/g, (char) => char.toUpperCase())}
+                        {txt}
                       </Badge>
                     ))
                   ) : (
@@ -295,7 +307,7 @@ export default function Template14() {
                         key={i}
                         pill
                         style={{ backgroundColor: BRAND, color: "#fff" }}
-                        className="me-1 mb-1"
+                        className="me-1 mb-1 skill-badge"
                       >
                         {l?.language?.language_name}
                       </Badge>
@@ -453,6 +465,22 @@ export default function Template14() {
           padding-bottom: 0.3rem;
           margin-bottom: 1rem;
         }
+
+        /* ✅ A4 cover (fill height within 5mm padding) */
+        .a4-card { width: 100%; min-height: calc(297mm - 10mm); }
+
+        /* ✅ Keep skill badges inside their cards + LEFT aligned text */
+        .skill-badge{
+          max-width: 100%;
+          white-space: normal !important;
+          overflow-wrap: anywhere;
+          word-break: break-word;
+          text-align: left;
+          line-height: 1.2;
+          display: inline-block;
+          vertical-align: top;
+        }
+
         @media (max-width: 768px) {
           .hero {
             text-align: center;

@@ -43,7 +43,7 @@ import TemplateFormat from "./templates/TemplateFormat";
 export default function App() {
   return (
     <ErrorBoundary>
-      <Template14 />
+      <Template12 />
     </ErrorBoundary>
   );
 }

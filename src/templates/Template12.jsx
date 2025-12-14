@@ -1,4 +1,4 @@
-// Template13.jsx — Refined Crimson Text CV Template with brand #32489e
+// Template12.jsx — Refined Crimson Text CV Template with brand #32489e
 import { useEffect, useState } from "react";
 import {
   Container,
@@ -14,8 +14,8 @@ import { FiPhone, FiMail, FiMapPin } from "react-icons/fi";
 import "bootstrap/dist/css/bootstrap.min.css";
 import moment from "moment";
 
-const cvUrl = "https://ekazi.co.tz";
-const API = "https://ekazi.co.tz/api/cv/cv_builder/30750";
+const cvUrl = "https://api.ekazi.co.tz";
+const API = "https://api.ekazi.co.tz/api/cv/cv_builder/30750";
 const BRAND = "#32489e";
 
 export default function Template12() {
@@ -102,8 +102,67 @@ export default function Template12() {
     return m.isValid() ? m.format("YYYY") : "";
   };
 
+  // ===== Flattened & Capitalized “chips” data =====
+  const chipsCulture = culture
+    .map((c) =>
+      (c?.culture?.culture_name || c?.culture_name || c?.name || "")
+        .replace(/^,+/, "")
+        .toLowerCase()
+        .replace(/\b\w/g, (char) => char.toUpperCase())
+    )
+    .filter(Boolean);
+
+  const chipsPersonality = personalities
+    .map((p) =>
+      (p?.personality?.personality_name || "")
+        .replace(/^,+/, "")
+        .toLowerCase()
+        .replace(/\b\w/g, (char) => char.toUpperCase())
+    )
+    .filter(Boolean);
+
+  const chipsSoftware = software
+    .map((s) =>
+      (s?.software?.software_name || s?.software_name || "")
+        .replace(/^,+/, "")
+        .toLowerCase()
+        .replace(/\b\w/g, (char) => char.toUpperCase())
+    )
+    .filter(Boolean);
+
+  const chipsSkills = knowledge
+    .map((k) =>
+      (k?.knowledge?.knowledge_name || k?.knowledge_name || "")
+        .replace(/^,+/, "")
+        .toLowerCase()
+        .replace(/\b\w/g, (char) => char.toUpperCase())
+    )
+    .filter(Boolean);
+
+  const chipsLanguages = languages
+    .map((l) =>
+      (l?.language?.language_name || l?.language_name || "")
+        .replace(/^,+/, "")
+        .toLowerCase()
+        .replace(/\b\w/g, (char) => char.toUpperCase())
+    )
+    .filter(Boolean);
+
   return (
-    <Container fluid className="my-4 px-md-5">
+    <Container
+      fluid
+      className="p-0"
+      style={{
+        width: "210mm",
+        minHeight: "297mm",
+        margin: "auto",
+        backgroundColor: "#fff",
+        padding: "5mm",
+        fontFamily:
+          '"Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+        boxShadow: "0 0 5px rgba(0,0,0,0.2)",
+      }}
+    >
       <link
         href="https://fonts.googleapis.com/css2?family=Crimson+Text:wght@400;600;700&display=swap"
         rel="stylesheet"
@@ -132,13 +191,23 @@ export default function Template12() {
           color: #fff;
           font-size: 0.85rem;
           padding: 0.4em 0.75em;
+          text-align: left;
+          max-width: 100%;
+          white-space: normal !important;
+          overflow-wrap: anywhere;
+          word-break: break-word;
+          line-height: 1.2;
         }
         .shadow-soft {
           box-shadow: 0 3px 10px rgba(50,72,158,0.12);
         }
+
+        /* ✅ Ensure A4 cover: remove outer bootstrap spacing + fill height inside 5mm padding */
+        .a4-card { width: 100%; min-height: calc(297mm - 10mm); }
+
       `}</style>
 
-      <Card className="border-0 shadow-soft overflow-hidden">
+      <Card className="border-0 shadow-soft overflow-hidden a4-card">
         {/* Header */}
         <div className="banner py-5 px-4">
           <Row className="align-items-center">
@@ -206,11 +275,11 @@ export default function Template12() {
                   <h5 className="fw-bold mb-3" style={{ color: BRAND }}>
                     Languages
                   </h5>
-                  {languages.length ? (
+                  {chipsLanguages.length ? (
                     <div className="d-flex flex-wrap gap-2">
-                      {languages.map((l, i) => (
+                      {chipsLanguages.map((txt, i) => (
                         <Badge key={i} pill className="badge-skill">
-                          {l?.language?.language_name || "Language"}
+                          {txt || "Language"}
                         </Badge>
                       ))}
                     </div>
@@ -226,14 +295,14 @@ export default function Template12() {
                     Skills & Tools
                   </h5>
                   <div className="d-flex flex-wrap gap-2">
-                    {knowledge.map((k, i) => (
-                      <Badge key={i} pill className="badge-skill">
-                        {k?.knowledge?.knowledge_name || "Skill"}
+                    {chipsSkills.map((txt, i) => (
+                      <Badge key={`k-${i}`} pill className="badge-skill">
+                        {txt || "Skill"}
                       </Badge>
                     ))}
-                    {software.map((s, i) => (
-                      <Badge key={i} pill className="badge-skill">
-                        {s?.software?.software_name || "Software"}
+                    {chipsSoftware.map((txt, i) => (
+                      <Badge key={`s-${i}`} pill className="badge-skill">
+                        {txt || "Software"}
                       </Badge>
                     ))}
                   </div>
@@ -246,14 +315,14 @@ export default function Template12() {
                     Culture & Personality
                   </h5>
                   <div className="d-flex flex-wrap gap-2">
-                    {culture.map((c, i) => (
-                      <Badge key={i} pill className="badge-skill">
-                        {c?.culture?.culture_name}
+                    {chipsCulture.map((txt, i) => (
+                      <Badge key={`c-${i}`} pill className="badge-skill">
+                        {txt || "Culture"}
                       </Badge>
                     ))}
-                    {personalities.map((p, i) => (
-                      <Badge key={i} pill className="badge-skill">
-                        {p?.personality?.personality_name}
+                    {chipsPersonality.map((txt, i) => (
+                      <Badge key={`p-${i}`} pill className="badge-skill">
+                        {txt || "Personality"}
                       </Badge>
                     ))}
                   </div>

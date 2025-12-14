@@ -22,8 +22,8 @@ import {
 import "bootstrap/dist/css/bootstrap.min.css";
 import moment from "moment";
 
-const cvUrl = "https://ekazi.co.tz";
-const API = "https://ekazi.co.tz/api/cv/cv_builder/30750";
+const cvUrl = "https://api.ekazi.co.tz";
+const API = "https://api.ekazi.co.tz/api/cv/cv_builder/30750";
 const BRAND = "#242a64";
 
 export default function Template13() {
@@ -76,6 +76,7 @@ export default function Template13() {
   const culture = payload?.culture ?? [];
   const personalities = payload?.applicant_personality ?? [];
   const addresses = payload?.address ?? [];
+  const tools = payload?.tools ?? [];
 
   // --- Contact ---
   const phone =
@@ -111,8 +112,76 @@ export default function Template13() {
     return m.isValid() ? m.format("YYYY") : "";
   };
 
+  // ===== Flattened & Capitalized “chips” data =====
+  const chipsCulture = culture
+    .map((c) =>
+      (c?.culture?.culture_name || c?.culture_name || c?.name || "")
+        .replace(/^,+/, "")
+        .toLowerCase()
+        .replace(/\b\w/g, (char) => char.toUpperCase())
+    )
+    .filter(Boolean);
+
+  const chipsPersonality = personalities
+    .map((p) =>
+      (p?.personality?.personality_name || "")
+        .replace(/^,+/, "")
+        .toLowerCase()
+        .replace(/\b\w/g, (char) => char.toUpperCase())
+    )
+    .filter(Boolean);
+
+  const chipsSoftware = software
+    .map((s) =>
+      (s?.software?.software_name || s?.software_name || "")
+        .replace(/^,+/, "")
+        .toLowerCase()
+        .replace(/\b\w/g, (char) => char.toUpperCase())
+    )
+    .filter(Boolean);
+
+  const chipsSkills = knowledge
+    .map((k) =>
+      (k?.knowledge?.knowledge_name || k?.knowledge_name || "")
+        .replace(/^,+/, "")
+        .toLowerCase()
+        .replace(/\b\w/g, (char) => char.toUpperCase())
+    )
+    .filter(Boolean);
+
+  const chipsTools = tools
+    .map((t) =>
+      (t?.tool?.tool_name || t?.tool_name || "")
+        .replace(/^,+/, "")
+        .toLowerCase()
+        .replace(/\b\w/g, (char) => char.toUpperCase())
+    )
+    .filter(Boolean);
+
+  const chipsLanguages = languages
+    .map((l) =>
+      (l?.language?.language_name || l?.language_name || "")
+        .replace(/^,+/, "")
+        .toLowerCase()
+        .replace(/\b\w/g, (char) => char.toUpperCase())
+    )
+    .filter(Boolean);
+
   return (
-    <Container fluid className="my-4 px-md-5">
+    <Container
+      fluid
+      className="p-0"
+      style={{
+        width: "210mm",
+        minHeight: "297mm",
+        margin: "auto",
+        backgroundColor: "#000",
+        padding: "5mm",
+        fontFamily:
+          '"Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+        boxShadow: "0 0 5px rgba(0,0,0,0.2)",
+      }}
+    >
       <link
         href="https://fonts.googleapis.com/css2?family=Bitter:wght@400;600;700&display=swap"
         rel="stylesheet"
@@ -161,6 +230,16 @@ export default function Template13() {
           color: #fff;
           font-size: 0.85rem;
           padding: 0.35em 0.8em;
+
+          /* ✅ keep inside + left aligned + wrap */
+          max-width: 100%;
+          white-space: normal !important;
+          overflow-wrap: anywhere;
+          word-break: break-word;
+          text-align: left;
+          line-height: 1.2;
+          display: inline-block;
+          vertical-align: top;
         }
         .skill-card h6 {
           font-weight: 700;
@@ -169,9 +248,12 @@ export default function Template13() {
         .section-spacing {
           margin-bottom: 2.5rem;
         }
+
+        /* ✅ fill A4 height inside 5mm padding */
+        .a4-card { width: 100%; min-height: calc(297mm - 10mm); }
       `}</style>
 
-      <Card className="border-0 shadow-soft overflow-hidden">
+      <Card className="border-0 shadow-soft overflow-hidden a4-card">
         {/* --- Header --- */}
         <div className="header-bar d-flex flex-column flex-md-row align-items-center gap-4">
           <Image
@@ -227,9 +309,9 @@ export default function Template13() {
                 <div className="d-grid gap-3">
                   <SkillBlock icon={<FiStar />} title="Knowledge">
                     {knowledge.length ? (
-                      knowledge.map((k, i) => (
+                      chipsSkills.map((txt, i) => (
                         <Badge key={i} pill className="skill-badge me-1 mb-1">
-                          {k?.knowledge?.knowledge_name || "Skill"}
+                          {txt || "Skill"}
                         </Badge>
                       ))
                     ) : (
@@ -239,9 +321,9 @@ export default function Template13() {
 
                   <SkillBlock icon={<FiCpu />} title="Software">
                     {software.length ? (
-                      software.map((s, i) => (
+                      chipsSoftware.map((txt, i) => (
                         <Badge key={i} pill className="skill-badge me-1 mb-1">
-                          {s?.software?.software_name}
+                          {txt || "Software"}
                         </Badge>
                       ))
                     ) : (
@@ -251,9 +333,9 @@ export default function Template13() {
 
                   <SkillBlock icon={<FiGlobe />} title="Culture">
                     {culture.length ? (
-                      culture.map((c, i) => (
+                      chipsCulture.map((txt, i) => (
                         <Badge key={i} pill className="skill-badge me-1 mb-1">
-                          {c?.culture?.culture_name}
+                          {txt || "Culture"}
                         </Badge>
                       ))
                     ) : (
@@ -263,9 +345,9 @@ export default function Template13() {
 
                   <SkillBlock icon={<FiUser />} title="Personality">
                     {personalities.length ? (
-                      personalities.map((p, i) => (
+                      chipsPersonality.map((txt, i) => (
                         <Badge key={i} pill className="skill-badge me-1 mb-1">
-                          {p?.personality?.personality_name}
+                          {txt || "Personality"}
                         </Badge>
                       ))
                     ) : (
@@ -275,9 +357,9 @@ export default function Template13() {
 
                   <SkillBlock icon={<FiGlobe />} title="Languages">
                     {languages.length ? (
-                      languages.map((l, i) => (
+                      chipsLanguages.map((txt, i) => (
                         <Badge key={i} pill className="skill-badge me-1 mb-1">
-                          {l?.language?.language_name}
+                          {txt || "Language"}
                         </Badge>
                       ))
                     ) : (
