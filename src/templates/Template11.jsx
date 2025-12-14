@@ -14,8 +14,8 @@ import { FiPhone, FiMail, FiMapPin } from "react-icons/fi";
 import "bootstrap/dist/css/bootstrap.min.css";
 import moment from "moment";
 
-const cvUrl = "https://ekazi.co.tz";
-const API = "https://ekazi.co.tz/api/cv/cv_builder/30750";
+const cvUrl = "https://api.ekazi.co.tz";
+const API = "https://api.ekazi.co.tz/api/cv/cv_builder/30750";
 const BRAND = "#009485";
 
 export default function Template11() {
@@ -97,7 +97,20 @@ export default function Template11() {
   };
 
   return (
-    <Container fluid className="my-4 px-3 px-md-5">
+    <Container
+      fluid
+      className="p-0"
+      style={{
+        width: "210mm",
+        minHeight: "297mm",
+        margin: "auto",
+        backgroundColor: "#fff",
+        padding: "5mm",
+        fontFamily:
+          '"Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+        boxShadow: "0 0 5px rgba(0,0,0,0.2)",
+      }}
+    >
       <link
         href="https://fonts.googleapis.com/css2?family=Dosis:wght@300;400;500;600;700&display=swap"
         rel="stylesheet"
@@ -105,6 +118,14 @@ export default function Template11() {
       <style>{`
         * { font-family: "Dosis", sans-serif; }
         h1,h4,h6 { letter-spacing: 0.5px; }
+
+        /* ✅ Ensure the A4 container fully covers without bootstrap margins */
+        .a4-row { margin: 0 !important; }
+        .a4-col { padding: 0 !important; }
+
+        /* ✅ Make the main card fill the A4 height inside 5mm padding */
+        .a4-card { width: 100%; min-height: calc(297mm - 10mm); }
+
         .header-section {
           background-color: ${BRAND};
           color: #fff;
@@ -137,14 +158,25 @@ export default function Template11() {
         .bg-light {
           background-color: #f8f9fa !important;
         }
+
+        /* ✅ Keep long skill chips INSIDE the sidebar width + LEFT aligned text */
+        .skill-chip {
+          max-width: 100%;
+          white-space: normal !important;
+          overflow-wrap: anywhere;
+          word-break: break-word;
+          text-align: left;
+          line-height: 1.2;
+        }
+
         @media (max-width: 768px) {
           .contact-info { flex-direction: column; align-items: center; gap: .6rem; }
         }
       `}</style>
 
-      <Row className="justify-content-center">
-        <Col md={11} lg={10}>
-          <Card className="shadow border-0 overflow-hidden rounded-3">
+      <Row className="justify-content-center a4-row">
+        <Col md={12} lg={12} className="a4-col">
+          <Card className="shadow border-0 overflow-hidden rounded-3 a4-card">
             {/* Header */}
             <div className="header-section text-center py-5">
               <h1 className="fw-bold mb-1" style={{ fontSize: "2.2rem" }}>
@@ -235,10 +267,7 @@ export default function Template11() {
               {/* Main */}
               <Col md={8} className="p-4 bg-white">
                 <Section title="About Me">
-                  <p
-                    className="mb-0 text-muted"
-                    style={{ textAlign: "justify" }}
-                  >
+                  <p className="mb-0 text-muted" style={{ textAlign: "justify" }}>
                     {intro}
                   </p>
                 </Section>
@@ -283,9 +312,7 @@ export default function Template11() {
                       </Card>
                     ))
                   ) : (
-                    <div className="text-secondary">
-                      No job experience added.
-                    </div>
+                    <div className="text-secondary">No job experience added.</div>
                   )}
                 </Section>
 
@@ -305,9 +332,7 @@ export default function Template11() {
                           {edu?.level?.education_level || edu?.degree || "—"}
                         </div>
                         <div className="text-muted">
-                          {edu?.college?.college_name ||
-                            edu?.institution ||
-                            "—"}
+                          {edu?.college?.college_name || edu?.institution || "—"}
                         </div>
                         <div className="small text-muted">
                           {formatMY(edu?.started)} – {formatMY(edu?.ended)}
@@ -324,11 +349,7 @@ export default function Template11() {
                 {referees.length > 0 && (
                   <Section title="Referees">
                     {referees.map((r, i) => {
-                      const fullName = [
-                        r.first_name,
-                        r.middle_name,
-                        r.last_name,
-                      ]
+                      const fullName = [r.first_name, r.middle_name, r.last_name]
                         .filter(Boolean)
                         .join(" ");
                       return (
@@ -393,6 +414,7 @@ function SkillChips({ items, keyName, nestedKey }) {
         <Badge
           key={i}
           pill
+          className="skill-chip"
           style={{
             backgroundColor: BRAND,
             color: "#fff",
