@@ -21,8 +21,8 @@ import {
 import "bootstrap/dist/css/bootstrap.min.css";
 import moment from "moment";
 
-const cvUrl = "https://ekazi.co.tz";
-const API = "https://ekazi.co.tz/api/cv/cv_builder/30750";
+const cvUrl = "https://api.ekazi.co.tz";
+const API = "https://api.ekazi.co.tz/api/cv/cv_builder/30750";
 const BRAND = "#b62424";
 
 export default function Template15() {
@@ -77,6 +77,7 @@ export default function Template15() {
   const software = payload?.software ?? [];
   const culture = payload?.culture ?? [];
   const personalities = payload?.applicant_personality ?? [];
+  const tools = payload?.tools ?? [];
 
   const phone =
     payload?.phone?.phone_number ||
@@ -105,19 +106,126 @@ export default function Template15() {
     return m.isValid() ? m.format("MMM YYYY") : "—";
   };
 
-  const formatY = (d) => {
-    const m = moment(d);
-    return m.isValid() ? m.format("YYYY") : "";
-  };
+  // ===== Flattened & Capitalized “chips” data =====
+  const chipsCulture = culture
+    .map((c) =>
+      (c?.culture?.culture_name || c?.culture_name || c?.name || "")
+        .replace(/^,+/, "")
+        .toLowerCase()
+        .replace(/\b\w/g, (char) => char.toUpperCase())
+    )
+    .filter(Boolean);
+
+  const chipsPersonality = personalities
+    .map((p) =>
+      (p?.personality?.personality_name || "")
+        .replace(/^,+/, "")
+        .toLowerCase()
+        .replace(/\b\w/g, (char) => char.toUpperCase())
+    )
+    .filter(Boolean);
+
+  const chipsSoftware = software
+    .map((s) =>
+      (s?.software?.software_name || s?.software_name || "")
+        .replace(/^,+/, "")
+        .toLowerCase()
+        .replace(/\b\w/g, (char) => char.toUpperCase())
+    )
+    .filter(Boolean);
+
+  const chipsSkills = knowledge
+    .map((k) =>
+      (k?.knowledge?.knowledge_name || k?.knowledge_name || "")
+        .replace(/^,+/, "")
+        .toLowerCase()
+        .replace(/\b\w/g, (char) => char.toUpperCase())
+    )
+    .filter(Boolean);
+
+  const chipsTools = tools
+    .map((t) =>
+      (t?.tool?.tool_name || t?.tool_name || "")
+        .replace(/^,+/, "")
+        .toLowerCase()
+        .replace(/\b\w/g, (char) => char.toUpperCase())
+    )
+    .filter(Boolean);
+
+  const chipsLanguages = languages
+    .map((l) =>
+      (l?.language?.language_name || l?.language_name || "")
+        .replace(/^,+/, "")
+        .toLowerCase()
+        .replace(/\b\w/g, (char) => char.toUpperCase())
+    )
+    .filter(Boolean);
 
   return (
-    <Container fluid className="my-4">
+    <Container
+      fluid
+      className="p-0"
+      style={{
+        width: "210mm",
+        minHeight: "297mm",
+        margin: "auto",
+        backgroundColor: "#000",
+        padding: "5mm",
+        fontFamily:
+          '"Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+        boxShadow: "0 0 5px rgba(0,0,0,0.2)",
+      }}
+    >
       <link
         href="https://fonts.googleapis.com/css2?family=Chivo:wght@400;600;700&display=swap"
         rel="stylesheet"
       />
+      <style>{`
+        /* ✅ fill A4 height within 5mm padding */
+        .a4-card { width: 100%; min-height: calc(297mm - 10mm); }
+
+        /* ✅ Keep badges inside their cards + LEFT aligned text */
+        .skill-badge{
+          max-width: 100%;
+          white-space: normal !important;
+          overflow-wrap: anywhere;
+          word-break: break-word;
+          text-align: left;
+          line-height: 1.2;
+          display: inline-block;
+          vertical-align: top;
+        }
+
+        /* ✅ Skills & Traits only */
+        .skills-traits .card-body{
+          font-size: 0.92rem;
+        }
+
+        /* ✅ turn badges into bullet items only inside Skills & Traits */
+        .skills-traits ul{
+          margin: 0;
+          padding-left: 1.1rem;
+        }
+        .skills-traits li{
+          margin-bottom: .25rem;
+          color: #111;
+        }
+        .skills-traits .skill-badge{
+          background: transparent !important;
+          border: 0 !important;
+          box-shadow: none !important;
+          border-radius: 0 !important;
+          padding: 0 !important;
+          margin: 0 !important;
+          display: inline !important;
+          color: #111 !important;
+          font-size: 0.78rem !important;
+          line-height: 1.15 !important;
+        }
+      `}</style>
+
       <Card
-        className="shadow-lg border-0 overflow-hidden"
+        className="shadow-lg border-0 overflow-hidden a4-card"
         style={{ fontFamily: "'Chivo', sans-serif" }}
       >
         {/* Hero Header with gradient */}
@@ -207,13 +315,14 @@ export default function Template15() {
           {languages.length > 0 && (
             <SectionCard title="Languages">
               <div className="d-flex flex-wrap gap-2">
-                {languages.map((l, i) => (
+                {chipsLanguages.map((txt, i) => (
                   <Badge
                     key={i}
                     pill
                     style={{ backgroundColor: BRAND, color: "#fff" }}
+                    className="skill-badge"
                   >
-                    {l?.language?.language_name || "Language"}
+                    {txt || "Language"}
                   </Badge>
                 ))}
               </div>
@@ -221,53 +330,74 @@ export default function Template15() {
           )}
 
           {/* Skills Grid */}
-          <SectionCard title="Skills & Traits">
+          <SectionCard title="Skills & Traits" className="skills-traits">
             <Row className="g-4">
               <Col md={6} lg={3}>
                 <SkillBlock title="Knowledge" icon={<FiStar />}>
-                  {knowledge.map((k, i) => (
-                    <Badge key={i} pill bg="secondary" className="me-1 mb-1">
-                      {k?.knowledge?.knowledge_name}
-                    </Badge>
-                  ))}
+                  <ul>
+                    {chipsSkills.map((txt, i) => (
+                      <li key={i}>
+                        <Badge
+                          pill
+                          bg="secondary"
+                          className="me-1 mb-1 skill-badge"
+                        >
+                          {txt}
+                        </Badge>
+                      </li>
+                    ))}
+                  </ul>
                 </SkillBlock>
               </Col>
+
               <Col md={6} lg={3}>
                 <SkillBlock title="Software" icon={<FiCpu />}>
-                  {software.map((s, i) => (
-                    <Badge key={i} pill bg="dark" className="me-1 mb-1">
-                      {s?.software?.software_name}
-                    </Badge>
-                  ))}
+                  <ul>
+                    {chipsSoftware.map((txt, i) => (
+                      <li key={i}>
+                        <Badge pill bg="dark" className="me-1 mb-1 skill-badge">
+                          {txt}
+                        </Badge>
+                      </li>
+                    ))}
+                  </ul>
                 </SkillBlock>
               </Col>
+
               <Col md={6} lg={3}>
                 <SkillBlock title="Culture" icon={<FiGlobe />}>
-                  {culture.map((c, i) => (
-                    <Badge
-                      key={i}
-                      pill
-                      style={{ backgroundColor: BRAND, color: "#fff" }}
-                      className="me-1 mb-1"
-                    >
-                      {c?.culture?.culture_name}
-                    </Badge>
-                  ))}
+                  <ul>
+                    {chipsCulture.map((txt, i) => (
+                      <li key={i}>
+                        <Badge
+                          pill
+                          style={{ backgroundColor: BRAND, color: "#fff" }}
+                          className="me-1 mb-1 skill-badge"
+                        >
+                          {txt}
+                        </Badge>
+                      </li>
+                    ))}
+                  </ul>
                 </SkillBlock>
               </Col>
+
               <Col md={6} lg={3}>
                 <SkillBlock title="Personality" icon={<FiUser />}>
-                  {personalities.map((p, i) => (
-                    <Badge
-                      key={i}
-                      pill
-                      bg="info"
-                      text="dark"
-                      className="me-1 mb-1"
-                    >
-                      {p?.personality?.personality_name}
-                    </Badge>
-                  ))}
+                  <ul>
+                    {chipsPersonality.map((txt, i) => (
+                      <li key={i}>
+                        <Badge
+                          pill
+                          bg="info"
+                          text="dark"
+                          className="me-1 mb-1 skill-badge"
+                        >
+                          {txt}
+                        </Badge>
+                      </li>
+                    ))}
+                  </ul>
                 </SkillBlock>
               </Col>
             </Row>
@@ -353,9 +483,9 @@ export default function Template15() {
   );
 }
 
-function SectionCard({ title, children }) {
+function SectionCard({ title, children, className = "" }) {
   return (
-    <div className="mb-5">
+    <div className={`mb-5 ${className}`}>
       <h3
         className="fw-bold mb-3 pb-2 border-bottom d-inline-block"
         style={{ color: BRAND, borderColor: BRAND }}
