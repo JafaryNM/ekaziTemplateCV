@@ -1,4 +1,4 @@
-// Template8.jsx — Final Polished Version (Fixed Dot Alignment + Perfect Timeline Flow)
+// Template8.jsx — Final Polished Version (Fixed Dot Alignment + Perfect Timeline Flow + A4 Dimensions + Balanced Contact)
 import React, { useEffect, useState } from "react";
 import {
   Container,
@@ -264,59 +264,72 @@ const Template8 = () => {
     };
   });
 
-// ===== Flattened & Capitalized “chips” data =====
-const chipsCulture = culture
-  .map((c) =>
-    (c?.culture?.culture_name || c?.culture_name || c?.name || "")
-      .replace(/^,+/, "")
-      .trim()
-      .toLowerCase()
-      .replace(/\b\w/g, (char) => char.toUpperCase())
-  )
-  .filter(Boolean);
+  // ===== Flattened & Capitalized “chips” data =====
+  const chipsCulture = culture
+    .map((c) =>
+      (c?.culture?.culture_name || c?.culture_name || c?.name || "")
+        .replace(/^,+/, "")
+        .trim()
+        .toLowerCase()
+        .replace(/\b\w/g, (char) => char.toUpperCase())
+    )
+    .filter(Boolean);
 
-const chipsPersonality = personalities
-  .map((p) =>
-    (p?.personality?.personality_name || "")
-      .replace(/^,+/, "")
-      .trim()
-      .toLowerCase()
-      .replace(/\b\w/g, (char) => char.toUpperCase())
-  )
-  .filter(Boolean);
+  const chipsPersonality = personalities
+    .map((p) =>
+      (p?.personality?.personality_name || "")
+        .replace(/^,+/, "")
+        .trim()
+        .toLowerCase()
+        .replace(/\b\w/g, (char) => char.toUpperCase())
+    )
+    .filter(Boolean);
 
-const chipsSoftware = software
-  .map((s) =>
-    (s?.software?.software_name || s?.software_name || "")
-      .replace(/^,+/, "")
-      .trim()
-      .toLowerCase()
-      .replace(/\b\w/g, (char) => char.toUpperCase())
-  )
-  .filter(Boolean);
+  const chipsSoftware = software
+    .map((s) =>
+      (s?.software?.software_name || s?.software_name || "")
+        .replace(/^,+/, "")
+        .trim()
+        .toLowerCase()
+        .replace(/\b\w/g, (char) => char.toUpperCase())
+    )
+    .filter(Boolean);
 
-const chipsSkills = skills
-  .map((k) =>
-    (k?.knowledge?.knowledge_name || k?.knowledge_name || "")
-      .replace(/^,+/, "")
-      .trim()
-      .toLowerCase()
-      .replace(/\b\w/g, (char) => char.toUpperCase())
-  )
-  .filter(Boolean);
+  const chipsSkills = skills
+    .map((k) =>
+      (k?.knowledge?.knowledge_name || k?.knowledge_name || "")
+        .replace(/^,+/, "")
+        .trim()
+        .toLowerCase()
+        .replace(/\b\w/g, (char) => char.toUpperCase())
+    )
+    .filter(Boolean);
 
-const chipsTools = tools
-  .map((t) =>
-    (t?.tool?.tool_name || t?.tool_name || "")
-      .replace(/^,+/, "")
-      .trim()
-      .toLowerCase()
-      .replace(/\b\w/g, (char) => char.toUpperCase())
-  )
-  .filter(Boolean);
+  const chipsTools = tools
+    .map((t) =>
+      (t?.tool?.tool_name || t?.tool_name || "")
+        .replace(/^,+/, "")
+        .trim()
+        .toLowerCase()
+        .replace(/\b\w/g, (char) => char.toUpperCase())
+    )
+    .filter(Boolean);
 
   return (
-    <Container fluid className="p-0 bg-white">
+    <Container
+      fluid
+      className="p-0 bg-white"
+      style={{
+        width: "210mm",
+        minHeight: "297mm",
+        margin: "auto",
+        backgroundColor: "#fff",
+        padding: "5mm",
+        fontFamily:
+          '"Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+        boxShadow: "0 0 5px rgba(0,0,0,0.2)",
+      }}
+    >
       <style>{`
         .timeline-item::before {
           content: "";
@@ -326,6 +339,23 @@ const chipsTools = tools
           bottom: -12px;
           width: 2px;
           background: linear-gradient(${BRAND}, rgba(255,45,32,0.15));
+        }
+
+        /* ✅ Balance Contact details (icon + text alignment) */
+        .contact-list li{
+          display: flex;
+          align-items: flex-start;
+          gap: 10px;
+          line-height: 1.35;
+          margin-bottom: 8px;
+        }
+        .contact-list li svg{
+          flex: 0 0 16px;
+          margin-top: 2px;
+        }
+        .contact-list li span{
+          flex: 1;
+          word-break: break-word;
         }
       `}</style>
 
@@ -359,9 +389,7 @@ const chipsTools = tools
             />
           </Col>
           <Col>
-            <div className="text-uppercase small text-muted">
-              {currentTitle}
-            </div>
+            <div className="text-uppercase small text-muted">{currentTitle}</div>
             <h2 className="fw-bold mb-1" style={{ color: BRAND_DARK }}>
               {fullName}
             </h2>
@@ -449,10 +477,7 @@ const chipsTools = tools
                     .join(" ");
                   return (
                     <div key={i} className="mb-3">
-                      <div
-                        className="fw-semibold"
-                        style={{ color: BRAND_DARK }}
-                      >
+                      <div className="fw-semibold" style={{ color: BRAND_DARK }}>
                         {name || "—"}
                       </div>
                       <div className="small text-muted mb-1">
@@ -476,15 +501,18 @@ const chipsTools = tools
           <Card className="border-0 shadow-sm mb-4">
             <Card.Body className="p-4">
               <SectionHeader icon={FiMail} title="Contact" />
-              <ul className="small list-unstyled mb-0">
+              <ul className="small list-unstyled mb-0 contact-list">
                 <li>
-                  <FiPhone /> {primaryPhone}
+                  <FiPhone />
+                  <span>{primaryPhone}</span>
                 </li>
                 <li>
-                  <FiMail /> {primaryEmail}
+                  <FiMail />
+                  <span>{primaryEmail}</span>
                 </li>
                 <li>
-                  <FiMapPin /> {primaryAddress}
+                  <FiMapPin />
+                  <span>{primaryAddress}</span>
                 </li>
               </ul>
             </Card.Body>
