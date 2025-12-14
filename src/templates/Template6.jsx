@@ -22,8 +22,8 @@ import {
 import "bootstrap/dist/css/bootstrap.min.css";
 import moment from "moment";
 
-const API = "https://ekazi.co.tz/api/cv/cv_builder/30750";
-const CV_BASE = "https://ekazi.co.tz";
+const API = "https://api.ekazi.co.tz/api/cv/cv_builder/30750";
+const CV_BASE = "https://api.ekazi.co.tz";
 const BRAND = "#d36314";
 const BRAND_DARK = "#8B3A0F";
 
@@ -317,12 +317,18 @@ const Template6 = () => {
                 <span className="text-muted">
                   {culture.length
                     ? culture
-                        .map(
-                          (c) =>
+                        .map((c) => {
+                          const name =
                             c?.culture?.culture_name ||
                             c?.culture_name ||
-                            c?.name
-                        )
+                            c?.name ||
+                            "";
+
+                          return name
+                            .replace(/^,+/, "") // remove leading commas if any
+                            .toLowerCase()
+                            .replace(/\b\w/g, (char) => char.toUpperCase());
+                        })
                         .filter(Boolean)
                         .join(", ")
                     : "—"}
@@ -332,10 +338,29 @@ const Template6 = () => {
               {/* Personality */}
               <div className="d-flex align-items-start gap-2 mb-2 small">
                 <strong style={{ minWidth: 100 }}>Personality:</strong>
-                <span className="text-muted">
+                {/* <span className="text-muted">
                   {personalities.length
                     ? personalities
                         .map((p) => p?.personality?.personality_name)
+                        .filter(Boolean)
+                        .join(", ")
+                    : "—"}
+                </span> */}
+                <span className="text-muted">
+                  {personalities.length
+                    ? personalities
+                        .map((p) => {
+                          const name =
+                            p?.personality?.personality_name ||
+                            p?.personality_name ||
+                            p?.name ||
+                            "";
+
+                          return name
+                            .replace(/^,+/, "") // remove leading commas if any
+                            .toLowerCase()
+                            .replace(/\b\w/g, (char) => char.toUpperCase());
+                        })
                         .filter(Boolean)
                         .join(", ")
                     : "—"}
@@ -345,7 +370,7 @@ const Template6 = () => {
               {/* Software */}
               <div className="d-flex align-items-start gap-2 mb-2 small">
                 <strong style={{ minWidth: 100 }}>Software:</strong>
-                <span className="text-muted">
+                {/* <span className="text-muted">
                   {software.length
                     ? software
                         .map(
@@ -357,13 +382,33 @@ const Template6 = () => {
                         .filter(Boolean)
                         .join(", ")
                     : "—"}
+                </span> */}
+
+                <span className="text-muted">
+                  {software.length
+                    ? software
+                        .map((c) => {
+                          const name =
+                            c?.software?.software_name ||
+                            c?.software_name ||
+                            c?.name ||
+                            "";
+
+                          return name
+                            .replace(/^,+/, "") // remove leading commas if any
+                            .toLowerCase()
+                            .replace(/\b\w/g, (char) => char.toUpperCase());
+                        })
+                        .filter(Boolean)
+                        .join(", ")
+                    : "—"}
                 </span>
               </div>
 
               {/* Skills */}
               <div className="d-flex align-items-start gap-2 mb-2 small">
                 <strong style={{ minWidth: 100 }}>Skills:</strong>
-                <span className="text-muted">
+                {/* <span className="text-muted">
                   {skills.length
                     ? skills
                         .map(
@@ -375,18 +420,54 @@ const Template6 = () => {
                         .filter(Boolean)
                         .join(", ")
                     : "—"}
+                </span> */}
+                <span className="text-muted">
+                  {skills.length
+                    ? skills
+                        .map((c) => {
+                          const name =
+                            c?.knowledge?.knowledge_name ||
+                            c?.knowledge_name ||
+                            c?.name ||
+                            "";
+
+                          return name
+                            .replace(/^,+/, "") // remove leading commas if any
+                            .toLowerCase()
+                            .replace(/\b\w/g, (char) => char.toUpperCase());
+                        })
+                        .filter(Boolean)
+                        .join(", ")
+                    : "—"}
                 </span>
               </div>
 
               {/* Tools */}
               <div className="d-flex align-items-start gap-2 small">
                 <strong style={{ minWidth: 100 }}>Tools:</strong>
-                <span className="text-muted">
+                {/* <span className="text-muted">
                   {tools.length
                     ? tools
                         .map(
                           (t) => t?.tool?.tool_name || t?.tool_name || t?.name
                         )
+                        .filter(Boolean)
+                        .join(", ")
+                    : "—"}
+                </span> */}
+
+                <span className="text-muted">
+                  {tools.length
+                    ? tools
+                        .map((c) => {
+                          const name =
+                            c?.tool?.tool_name || c?.tool_name || c?.name || "";
+
+                          return name
+                            .replace(/^,+/, "") // remove leading commas if any
+                            .toLowerCase()
+                            .replace(/\b\w/g, (char) => char.toUpperCase());
+                        })
                         .filter(Boolean)
                         .join(", ")
                     : "—"}
