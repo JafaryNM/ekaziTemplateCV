@@ -1,5 +1,4 @@
-// Template1.jsx — Compatible with provided format (uses moment, no helpers)
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Container,
   Row,

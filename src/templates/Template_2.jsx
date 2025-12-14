@@ -3,8 +3,8 @@ import { useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import moment from "moment";
 
-const cvUrl = "https://ekazi.co.tz";
-const API = "https://ekazi.co.tz/api/cv/cv_builder/30750";
+const cvUrl = "https://api.ekazi.co.tz";
+const API = "https://api.ekazi.co.tz/api/cv/cv_builder/30750";
 
 export default function Template2() {
   const [payload, setPayload] = useState(null);
@@ -249,7 +249,9 @@ export default function Template2() {
                     <div className="d-flex flex-wrap gap-2">
                       {knowledge.map((k, i) => (
                         <span key={i} className="badge badge-accent">
-                          {k?.knowledge?.knowledge_name}
+                          {(k?.knowledge?.knowledge_name || "")
+                            .toLowerCase()
+                            .replace(/\b\w/g, (char) => char.toUpperCase())}
                         </span>
                       ))}
                     </div>
@@ -261,8 +263,10 @@ export default function Template2() {
                     <div className="fw-semibold mb-1">Software</div>
                     <div className="d-flex flex-wrap gap-2">
                       {software.map((s, i) => (
-                        <span key={i} className="badge badge-subtle-alt">
-                          {s?.software?.software_name}
+                        <span key={i} className="badge badge-accent">
+                          {(s?.software?.software_name || "")
+                            .toLowerCase()
+                            .replace(/\b\w/g, (char) => char.toUpperCase())}
                         </span>
                       ))}
                     </div>
@@ -275,7 +279,9 @@ export default function Template2() {
                     <div className="d-flex flex-wrap gap-2">
                       {culture.map((c, i) => (
                         <span key={i} className="badge badge-accent">
-                          {c?.culture?.culture_name}
+                          {(c?.culture?.culture_name || "")
+                            .toLowerCase()
+                            .replace(/\b\w/g, (char) => char.toUpperCase())}
                         </span>
                       ))}
                     </div>
@@ -286,10 +292,11 @@ export default function Template2() {
                   <div className="mb-2">
                     <div className="fw-semibold mb-1">Personality</div>
                     <div className="d-flex flex-wrap gap-2">
-                      {personalities.map((p, i) => (
-                        <span key={i} className="badge badge-subtle-alt">
-                          {p?.personality?.personality_name}
-                        </span>
+                      <span key={i} className="badge badge-accent">
+                        {(p?.personality?.personality_name || "")
+                          .toLowerCase()
+                          .replace(/\b\w/g, (char) => char.toUpperCase())}
+                      </span>
                       ))}
                     </div>
                   </div>
