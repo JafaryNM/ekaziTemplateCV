@@ -11,13 +11,13 @@ import {
 } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import moment from "moment";
-
-const API = "https://api.ekazi.co.tz/api/cv/cv_builder/30750";
-const CV_BASE = "https://api.ekazi.co.tz";
+const applicant_id = localStorage.getItem("applicantId");
+const API = "https://ekazi.co.tz/api/cv/cv_builder/30750";
 const BRAND = "#1756a5";
 const BRAND_DARK = "#0e3668";
+const CV_BASE = "https://ekazi.co.tz";
 
-const Template1 = () => {
+const TemplateFormat = () => {
   const [payload, setPayload] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -25,15 +25,18 @@ const Template1 = () => {
   useEffect(() => {
     fetch(API)
       .then((res) => {
-        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
         return res.json();
       })
       .then((json) => {
         setPayload(json?.data || {});
-        setLoading(false);
       })
       .catch((err) => {
         setError(err.message || "Failed to load profile");
+      })
+      .finally(() => {
         setLoading(false);
       });
   }, []);
@@ -356,17 +359,9 @@ const Template1 = () => {
                 <p className="small mb-0">
                   {software.length
                     ? software
-                        .map((s) => {
-                          const name =
-                            s?.software?.software_name ||
-                            s?.software_name ||
-                            "";
-
-                          return name
-                            .replace(/^,+/, "")
-                            .toLowerCase()
-                            .replace(/\b\w/g, (char) => char.toUpperCase());
-                        })
+                        .map(
+                          (s) => s?.software?.software_name || s?.software_name
+                        )
                         .filter(Boolean)
                         .join(", ")
                     : "—"}
@@ -380,22 +375,16 @@ const Template1 = () => {
                 <p className="small mb-0">
                   {skills.length
                     ? skills
-                        .map((k) => {
-                          const name =
-                            k?.knowledge?.knowledge_name ||
-                            k?.knowledge_name ||
-                            "";
-
-                          return name
-                            .replace(/^,+/, "")
-                            .toLowerCase()
-                            .replace(/\b\w/g, (char) => char.toUpperCase());
-                        })
+                        .map(
+                          (k) =>
+                            k?.knowledge?.knowledge_name || k?.knowledge_name
+                        )
                         .filter(Boolean)
                         .join(", ")
                     : "—"}
                 </p>
               </div>
+
               <div className="d-flex align-items-center gap-3">
                 <p className="fw-semibold mb-0" style={{ minWidth: 110 }}>
                   Tools:
@@ -403,14 +392,7 @@ const Template1 = () => {
                 <p className="small mb-0">
                   {tools.length
                     ? tools
-                        .map((t) => {
-                          const name = t?.tool?.tool_name || t?.tool_name || "";
-
-                          return name
-                            .replace(/^,+/, "")
-                            .toLowerCase()
-                            .replace(/\b\w/g, (char) => char.toUpperCase());
-                        })
+                        .map((t) => t?.tool?.tool_name || t?.tool_name)
                         .filter(Boolean)
                         .join(", ")
                     : "—"}
@@ -423,21 +405,19 @@ const Template1 = () => {
         {/* RIGHT SECTION */}
         <Col md={4} className="bg-dark text-light p-4">
           {/* Photo */}
-          {profiles.length > 0 ? (
+          {profiles.length ? (
             <div className="text-center mb-4">
               <img
                 src={
-                  profiles[0].picture
+                  profiles[0]?.picture
                     ? `${CV_BASE}/${profiles[0].picture}`
                     : "https://placehold.co/120x120?text=Photo"
                 }
                 alt="profile"
-                width="100"
-                height="100"
-                className="border border-3 border-white rounded"
-                style={{ objectFit: "cover" }}
+                className="border-4 border-white rounded object-cover"
+                width={100}
+                height={100}
                 onError={(e) => {
-                  e.currentTarget.onerror = null;
                   e.currentTarget.src =
                     "https://placehold.co/120x120?text=Photo";
                 }}
@@ -559,4 +539,4 @@ const Template1 = () => {
   );
 };
 
-export default Template1;
+export default TemplateFormat;
