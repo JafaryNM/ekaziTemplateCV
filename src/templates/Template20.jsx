@@ -13,8 +13,8 @@ import { FiPhone, FiMail, FiMapPin, FiGlobe } from "react-icons/fi";
 import "bootstrap/dist/css/bootstrap.min.css";
 import moment from "moment";
 
-const cvUrl = "https://ekazi.co.tz";
-const API = "https://ekazi.co.tz/api/cv/cv_builder/30750";
+const cvUrl = "https://api.ekazi.co.tz";
+const API = "https://api.ekazi.co.tz/api/cv/cv_builder/30750";
 
 const BRAND = "#ff511a";
 const INK = "#1b1b1b";
@@ -55,6 +55,7 @@ export default function Template20() {
   const software = payload?.software ?? [];
   const culture = payload?.culture ?? [];
   const personalities = payload?.applicant_personality ?? [];
+  const tools = payload?.tools ?? [];
 
   const phone =
     payload?.phone?.phone_number || payload?.user?.[0]?.phone || "—";
@@ -85,6 +86,62 @@ export default function Template20() {
     [profile]
   );
 
+  // ===== Flattened & Capitalized “chips” data =====
+  const chipsLanguages = languages
+    .map((l) =>
+      (l?.language?.language_name || l?.language_name || "")
+        .replace(/^,+/, "")
+        .toLowerCase()
+        .replace(/\b\w/g, (char) => char.toUpperCase())
+    )
+    .filter(Boolean);
+
+  const chipsSkills = knowledge
+    .map((k) =>
+      (k?.knowledge?.knowledge_name || k?.knowledge_name || "")
+        .replace(/^,+/, "")
+        .toLowerCase()
+        .replace(/\b\w/g, (char) => char.toUpperCase())
+    )
+    .filter(Boolean);
+
+  const chipsSoftware = software
+    .map((s) =>
+      (s?.software?.software_name || s?.software_name || "")
+        .replace(/^,+/, "")
+        .toLowerCase()
+        .replace(/\b\w/g, (char) => char.toUpperCase())
+    )
+    .filter(Boolean);
+
+  // (kept for consistency / future use)
+  const chipsCulture = culture
+    .map((c) =>
+      (c?.culture?.culture_name || c?.culture_name || c?.name || "")
+        .replace(/^,+/, "")
+        .toLowerCase()
+        .replace(/\b\w/g, (char) => char.toUpperCase())
+    )
+    .filter(Boolean);
+
+  const chipsPersonality = personalities
+    .map((p) =>
+      (p?.personality?.personality_name || "")
+        .replace(/^,+/, "")
+        .toLowerCase()
+        .replace(/\b\w/g, (char) => char.toUpperCase())
+    )
+    .filter(Boolean);
+
+  const chipsTools = tools
+    .map((t) =>
+      (t?.tool?.tool_name || t?.tool_name || "")
+        .replace(/^,+/, "")
+        .toLowerCase()
+        .replace(/\b\w/g, (char) => char.toUpperCase())
+    )
+    .filter(Boolean);
+
   if (loading)
     return (
       <div
@@ -104,13 +161,27 @@ export default function Template20() {
     );
 
   return (
-    <Container fluid className="my-4 px-2 px-md-4">
+    <Container
+      fluid
+      className="p-0"
+      style={{
+        width: "210mm",
+        minHeight: "297mm",
+        margin: "auto",
+        backgroundColor: "#000",
+        padding: "5mm",
+        fontFamily:
+          '"Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+        boxShadow: "0 0 5px rgba(0,0,0,0.2)",
+      }}
+    >
       <link
         href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap"
         rel="stylesheet"
       />
       <style>{`
         .t20-root { font-family: 'Space Grotesk', sans-serif; color: ${INK}; }
+        .a4-card { width: 100%; min-height: calc(297mm - 10mm); background: #fff; }
 
         /* HERO */
         .t20-hero {
@@ -165,13 +236,48 @@ export default function Template20() {
           border-radius: 50px;
           font-size: 0.8rem;
           padding: 0.4rem 0.7rem;
-          white-space: nowrap;
+          white-space: normal !important;
+          overflow-wrap: anywhere;
+          word-break: break-word;
+          text-align: left;
+          max-width: 100%;
+          display: inline-block;
+          line-height: 1.2;
         }
         .t20-skill-wrap {
           display: flex;
           flex-wrap: wrap;
           gap: 0.4rem;
           justify-content: flex-start;
+        }
+
+        /* CONTACT: icon on top, value below (slightly smaller so email fits) */
+        .t20-contact-stack {
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+        }
+        .t20-contact-item {
+          display: flex;
+          flex-direction: column;
+          gap: 6px;
+        }
+        .t20-contact-icon {
+          width: 26px;
+          height: 26px;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 8px;
+          border: 1px solid rgba(255, 81, 26, 0.25);
+          background: rgba(255, 81, 26, 0.08);
+          color: ${BRAND};
+        }
+        .t20-contact-text {
+          font-size: 0.9rem; /* ✅ reduced a little bit */
+          line-height: 1.25;
+          word-break: break-word;
+          overflow-wrap: anywhere;
         }
 
         /* RESPONSIVE */
@@ -188,7 +294,7 @@ export default function Template20() {
         }
       `}</style>
 
-      <div className="t20-root">
+      <div className="t20-root a4-card rounded-3 overflow-hidden">
         {/* HERO */}
         <div className="t20-hero">
           <div className="t20-photo">
@@ -214,51 +320,70 @@ export default function Template20() {
           <Col xs={12} md={4}>
             <Card className="t20-card">
               <Section title="Contact">
-                <p>
-                  <FiPhone className="me-2" /> {phone}
-                </p>
-                <p>
-                  <FiMail className="me-2" /> {email}
-                </p>
-                <p>
-                  <FiMapPin className="me-2" /> {location}
-                </p>
-                {payload?.user?.[0]?.website && (
-                  <p>
-                    <FiGlobe className="me-2" /> {payload?.user?.[0]?.website}
-                  </p>
-                )}
+                <div className="t20-contact-stack">
+                  <div className="t20-contact-item">
+                    <span className="t20-contact-icon">
+                      <FiPhone />
+                    </span>
+                    <div className="t20-contact-text">{phone}</div>
+                  </div>
+
+                  <div className="t20-contact-item">
+                    <span className="t20-contact-icon">
+                      <FiMail />
+                    </span>
+                    <div className="t20-contact-text">{email}</div>
+                  </div>
+
+                  <div className="t20-contact-item">
+                    <span className="t20-contact-icon">
+                      <FiMapPin />
+                    </span>
+                    <div className="t20-contact-text">{location}</div>
+                  </div>
+
+                  {payload?.user?.[0]?.website && (
+                    <div className="t20-contact-item">
+                      <span className="t20-contact-icon">
+                        <FiGlobe />
+                      </span>
+                      <div className="t20-contact-text">
+                        {payload?.user?.[0]?.website}
+                      </div>
+                    </div>
+                  )}
+                </div>
               </Section>
             </Card>
 
             <Card className="t20-card">
               <Section title="Skills">
                 <div className="t20-skill-wrap">
-                  {knowledge.map((k, i) => (
+                  {chipsSkills.map((txt, i) => (
                     <span key={i} className="t20-badge">
-                      {k?.knowledge?.knowledge_name}
+                      {txt}
                     </span>
                   ))}
-                  {software.map((s, i) => (
+                  {chipsSoftware.map((txt, i) => (
                     <span
                       key={i}
                       className="t20-badge"
                       style={{ background: "#333" }}
                     >
-                      {s?.software?.software_name}
+                      {txt}
                     </span>
                   ))}
                 </div>
               </Section>
             </Card>
 
-            {languages.length > 0 && (
+            {chipsLanguages.length > 0 && (
               <Card className="t20-card">
                 <Section title="Languages">
                   <div className="t20-skill-wrap">
-                    {languages.map((l, i) => (
+                    {chipsLanguages.map((txt, i) => (
                       <span key={i} className="t20-badge">
-                        {l?.language?.language_name}
+                        {txt}
                       </span>
                     ))}
                   </div>

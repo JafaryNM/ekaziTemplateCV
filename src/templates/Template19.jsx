@@ -13,8 +13,8 @@ import { FiPhone, FiMail, FiMapPin, FiGlobe, FiUser } from "react-icons/fi";
 import "bootstrap/dist/css/bootstrap.min.css";
 import moment from "moment";
 
-const cvUrl = "https://ekazi.co.tz";
-const API = "https://ekazi.co.tz/api/cv/cv_builder/30750";
+const cvUrl = "https://api.ekazi.co.tz";
+const API = "https://api.ekazi.co.tz/api/cv/cv_builder/30750";
 
 const BRAND = "#0c2b3b";
 const INK = "#222";
@@ -56,6 +56,7 @@ export default function Template19() {
   const software = payload?.software ?? [];
   const culture = payload?.culture ?? [];
   const personalities = payload?.applicant_personality ?? [];
+  const tools = payload?.tools ?? [];
 
   const phone =
     payload?.phone?.phone_number || payload?.user?.[0]?.phone || "—";
@@ -85,6 +86,61 @@ export default function Template19() {
     [profile]
   );
 
+  // ===== Flattened & Capitalized “chips” data =====
+  const chipsCulture = culture
+    .map((c) =>
+      (c?.culture?.culture_name || c?.culture_name || c?.name || "")
+        .replace(/^,+/, "")
+        .toLowerCase()
+        .replace(/\b\w/g, (char) => char.toUpperCase())
+    )
+    .filter(Boolean);
+
+  const chipsPersonality = personalities
+    .map((p) =>
+      (p?.personality?.personality_name || "")
+        .replace(/^,+/, "")
+        .toLowerCase()
+        .replace(/\b\w/g, (char) => char.toUpperCase())
+    )
+    .filter(Boolean);
+
+  const chipsSoftware = software
+    .map((s) =>
+      (s?.software?.software_name || s?.software_name || "")
+        .replace(/^,+/, "")
+        .toLowerCase()
+        .replace(/\b\w/g, (char) => char.toUpperCase())
+    )
+    .filter(Boolean);
+
+  const chipsSkills = knowledge
+    .map((k) =>
+      (k?.knowledge?.knowledge_name || k?.knowledge_name || "")
+        .replace(/^,+/, "")
+        .toLowerCase()
+        .replace(/\b\w/g, (char) => char.toUpperCase())
+    )
+    .filter(Boolean);
+
+  const chipsTools = tools
+    .map((t) =>
+      (t?.tool?.tool_name || t?.tool_name || "")
+        .replace(/^,+/, "")
+        .toLowerCase()
+        .replace(/\b\w/g, (char) => char.toUpperCase())
+    )
+    .filter(Boolean);
+
+  const chipsLanguages = languages
+    .map((l) =>
+      (l?.language?.language_name || l?.language_name || "")
+        .replace(/^,+/, "")
+        .toLowerCase()
+        .replace(/\b\w/g, (char) => char.toUpperCase())
+    )
+    .filter(Boolean);
+
   if (loading)
     return (
       <div
@@ -106,12 +162,21 @@ export default function Template19() {
   return (
     <Container
       fluid
-      className="d-flex justify-content-center align-items-start py-5 px-3 px-md-5"
-      style={{ minHeight: "100vh", background: "#f6f7f8" }}
+      className="p-0"
+      style={{
+        width: "210mm",
+        minHeight: "297mm",
+        margin: "auto",
+        backgroundColor: "#000",
+        padding: "5mm",
+        fontFamily:
+          '"Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+        boxShadow: "0 0 5px rgba(0,0,0,0.2)",
+      }}
     >
       <div
-        className="t19-root w-100 shadow-lg rounded-4 overflow-hidden"
-        style={{ maxWidth: "1100px", background: "#fff" }}
+        className="t19-root w-100 shadow-lg rounded-4 overflow-hidden a4-card"
+        style={{ background: "#fff" }}
       >
         {/* Fonts */}
         <link
@@ -121,6 +186,8 @@ export default function Template19() {
 
         {/* Styles */}
         <style>{`
+          .a4-card { width: 100%; min-height: calc(297mm - 10mm); }
+
           .t19-root { font-family: 'Red Hat Display', sans-serif; color: ${INK}; }
           .t19-hero {
             background: ${BRAND};
@@ -172,10 +239,51 @@ export default function Template19() {
             left: -23px;
             top: 4px;
           }
-          .t19-badge {
-            background: ${BRAND};
-            color: #fff;
+          .t19-badge { background: ${BRAND}; color: #fff; }
+
+          /* keep chips inside width + left aligned */
+          .chip-badge{
+            max-width: 100%;
+            white-space: normal !important;
+            overflow-wrap: anywhere;
+            word-break: break-word;
+            text-align: left;
+            line-height: 1.2;
+            display: inline-block;
+            vertical-align: top;
           }
+
+          /* ✅ Contact: icon on top, value below (same font size as before) */
+          .contact-stack{
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+          }
+          .contact-item{
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+          }
+          .contact-icon{
+            width: 26px;
+            height: 26px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            border: 1px solid rgba(12,43,59,.15);
+            background: rgba(12,43,59,.04);
+            color: ${BRAND};
+            flex-shrink: 0;
+          }
+          .contact-text{
+            font-size: 0.95rem;
+            line-height: 1.25;
+            word-break: break-word;
+            overflow-wrap: anywhere;
+          }
+
           @media (max-width: 768px) {
             .t19-hero { text-align: center; padding: 2.2rem 1.5rem; border-radius: 0 0 24px 24px; }
             .t19-name { font-size: 1.8rem; }
@@ -215,47 +323,71 @@ export default function Template19() {
           <Col md={4}>
             <Card body className="t19-card">
               <Section title="Contact" icon={<FiPhone />}>
-                <p>
-                  <FiPhone className="me-2" /> {phone}
-                </p>
-                <p>
-                  <FiMail className="me-2" /> {email}
-                </p>
-                <p>
-                  <FiMapPin className="me-2" /> {location}
-                </p>
-                {payload?.user?.[0]?.website && (
-                  <p>
-                    <FiGlobe className="me-2" /> {payload?.user?.[0]?.website}
-                  </p>
-                )}
+                <div className="contact-stack">
+                  <div className="contact-item">
+                    <span className="contact-icon">
+                      <FiPhone />
+                    </span>
+                    <div className="contact-text">{phone}</div>
+                  </div>
+
+                  <div className="contact-item">
+                    <span className="contact-icon">
+                      <FiMail />
+                    </span>
+                    <div className="contact-text">{email}</div>
+                  </div>
+
+                  <div className="contact-item">
+                    <span className="contact-icon">
+                      <FiMapPin />
+                    </span>
+                    <div className="contact-text">{location}</div>
+                  </div>
+
+                  {payload?.user?.[0]?.website && (
+                    <div className="contact-item">
+                      <span className="contact-icon">
+                        <FiGlobe />
+                      </span>
+                      <div className="contact-text">
+                        {payload?.user?.[0]?.website}
+                      </div>
+                    </div>
+                  )}
+                </div>
               </Section>
             </Card>
 
             <Card body className="t19-card">
               <Section title="Skills" icon={<FiUser />}>
                 <div className="d-flex flex-wrap gap-2">
-                  {knowledge.map((k, i) => (
-                    <Badge key={i} bg="secondary" pill>
-                      {k?.knowledge?.knowledge_name}
+                  {chipsSkills.map((txt, i) => (
+                    <Badge key={i} bg="secondary" pill className="chip-badge">
+                      {txt}
                     </Badge>
                   ))}
-                  {software.map((s, i) => (
-                    <Badge key={i} bg="dark" pill>
-                      {s?.software?.software_name}
+                  {chipsSoftware.map((txt, i) => (
+                    <Badge key={i} bg="dark" pill className="chip-badge">
+                      {txt}
+                    </Badge>
+                  ))}
+                  {chipsTools.map((txt, i) => (
+                    <Badge key={i} bg="secondary" pill className="chip-badge">
+                      {txt}
                     </Badge>
                   ))}
                 </div>
               </Section>
             </Card>
 
-            {languages.length > 0 && (
+            {chipsLanguages.length > 0 && (
               <Card body className="t19-card">
                 <Section title="Languages">
                   <div className="d-flex flex-wrap gap-2">
-                    {languages.map((l, i) => (
-                      <Badge key={i} className="t19-badge" pill>
-                        {l?.language?.language_name}
+                    {chipsLanguages.map((txt, i) => (
+                      <Badge key={i} className="t19-badge chip-badge" pill>
+                        {txt}
                       </Badge>
                     ))}
                   </div>
@@ -263,18 +395,30 @@ export default function Template19() {
               </Card>
             )}
 
-            {(culture.length > 0 || personalities.length > 0) && (
+            {(chipsCulture.length > 0 || chipsPersonality.length > 0) && (
               <Card body className="t19-card">
                 <Section title="Culture & Personality">
                   <div className="d-flex flex-wrap gap-2">
-                    {culture.map((c, i) => (
-                      <Badge key={i} bg="info" text="dark" pill>
-                        {c?.culture?.culture_name}
+                    {chipsCulture.map((txt, i) => (
+                      <Badge
+                        key={i}
+                        bg="info"
+                        text="dark"
+                        pill
+                        className="chip-badge"
+                      >
+                        {txt}
                       </Badge>
                     ))}
-                    {personalities.map((p, i) => (
-                      <Badge key={i} bg="warning" text="dark" pill>
-                        {p?.personality?.personality_name}
+                    {chipsPersonality.map((txt, i) => (
+                      <Badge
+                        key={i}
+                        bg="warning"
+                        text="dark"
+                        pill
+                        className="chip-badge"
+                      >
+                        {txt}
                       </Badge>
                     ))}
                   </div>
@@ -316,11 +460,7 @@ export default function Template19() {
                 <Section title="Referees">
                   <Row>
                     {referees.map((r, i) => {
-                      const rname = [
-                        r?.first_name,
-                        r?.middle_name,
-                        r?.last_name,
-                      ]
+                      const rname = [r?.first_name, r?.middle_name, r?.last_name]
                         .filter(Boolean)
                         .join(" ");
                       return (

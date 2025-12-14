@@ -12,8 +12,8 @@ import { FiPhone, FiMail, FiMapPin, FiGlobe } from "react-icons/fi";
 import "bootstrap/dist/css/bootstrap.min.css";
 import moment from "moment";
 
-const cvUrl = "https://ekazi.co.tz";
-const API = "https://ekazi.co.tz/api/cv/cv_builder/30750";
+const cvUrl = "https://api.ekazi.co.tz";
+const API = "https://api.ekazi.co.tz/api/cv/cv_builder/30750";
 
 const BRAND = "#2a3c7f";
 const INK = "#222";
@@ -80,6 +80,34 @@ export default function Template21() {
     [profile]
   );
 
+  // ===== Flattened & Capitalized “chips” data =====
+  const chipsCulture = culture
+    .map((c) =>
+      (c?.culture?.culture_name || c?.culture_name || c?.name || "")
+        .replace(/^,+/, "")
+        .toLowerCase()
+        .replace(/\b\w/g, (char) => char.toUpperCase())
+    )
+    .filter(Boolean);
+
+  const chipsSoftware = software
+    .map((s) =>
+      (s?.software?.software_name || s?.software_name || "")
+        .replace(/^,+/, "")
+        .toLowerCase()
+        .replace(/\b\w/g, (char) => char.toUpperCase())
+    )
+    .filter(Boolean);
+
+  const chipsSkills = knowledge
+    .map((k) =>
+      (k?.knowledge?.knowledge_name || k?.knowledge_name || "")
+        .replace(/^,+/, "")
+        .toLowerCase()
+        .replace(/\b\w/g, (char) => char.toUpperCase())
+    )
+    .filter(Boolean);
+
   if (loading) {
     return (
       <div
@@ -101,13 +129,45 @@ export default function Template21() {
   }
 
   return (
-    <Container fluid className="my-4 px-0">
+    <Container
+      fluid
+      className="p-0"
+      style={{
+        width: "210mm",
+        minHeight: "297mm",
+        margin: "auto",
+        backgroundColor: "#000",
+        padding: "5mm",
+        fontFamily:
+          '"Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+        boxShadow: "0 0 5px rgba(0,0,0,0.2)",
+      }}
+    >
       <link
         href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;500;600;700&display=swap"
         rel="stylesheet"
       />
       <style>{`
         .t23-root { font-family: 'Comfortaa', cursive; color: ${INK}; }
+
+        /* A4 inner card (fills remaining height) */
+        .a4-card{
+          width: 100%;
+          min-height: calc(297mm - 10mm);
+          background: #fff;
+        }
+
+        /* Contact: smaller font + icon above text */
+        .t23-contact-block { margin-bottom: 0.6rem; }
+        .t23-contact-icon { display: block; line-height: 1; margin-bottom: 0.2rem; }
+        .t23-contact-icon svg { width: 0.95em; height: 0.95em; }
+        .t23-contact-text {
+          font-size: 0.66rem;
+          line-height: 1.15;
+          word-break: break-word;
+          overflow-wrap: anywhere;
+        }
+        .t23-email-one-line { white-space: nowrap; }
 
         /* Sidebar */
         .t23-sidebar {
@@ -207,197 +267,213 @@ export default function Template21() {
         }
       `}</style>
 
-      <div className="t23-root">
-        <Row className="g-0">
-          {/* Sidebar */}
-          <Col md={3} className="t23-sidebar">
-            <div className="t23-photo">
-              <img
-                src={
-                  profile?.picture
-                    ? `${cvUrl}/${profile.picture}`
-                    : "https://placehold.co/140x140?text=Photo"
-                }
-                alt="profile"
-                style={{ width: "100%", height: "100%", objectFit: "cover" }}
-              />
-            </div>
-            <div className="t23-name">{fullName}</div>
-            <div className="t23-sub">{profile?.current_position || "—"}</div>
-            <p className="small mb-2">
-              <FiPhone /> {phone}
-            </p>
-            <p className="small mb-2">
-              <FiMail /> {email}
-            </p>
-            <p className="small mb-2">
-              <FiMapPin /> {location}
-            </p>
-            {website && (
-              <p className="small mb-0">
-                <FiGlobe /> {website}
-              </p>
-            )}
-            <hr className="border-light my-4" />
-            <h6 className="fw-bold">Biography</h6>
-            <p className="small">{intro}</p>
+      <Card className="a4-card">
+        <div className="t23-root">
+          <Row className="g-0">
+            {/* Sidebar */}
+            <Col md={3} className="t23-sidebar">
+              <div className="t23-photo">
+                <img
+                  src={
+                    profile?.picture
+                      ? `${cvUrl}/${profile.picture}`
+                      : "https://placehold.co/140x140?text=Photo"
+                  }
+                  alt="profile"
+                  style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                />
+              </div>
+              <div className="t23-name">{fullName}</div>
+              <div className="t23-sub">{profile?.current_position || "—"}</div>
 
-            {/* Languages */}
-            {languages.length > 0 && (
-              <>
-                <h6 className="t23-section-title">Languages</h6>
-                <ul className="list-unstyled small">
-                  {languages.map((l, i) => (
-                    <li key={i}>{l?.language?.language_name}</li>
-                  ))}
-                </ul>
-              </>
-            )}
+              <div className="t23-contact-block">
+                <span className="t23-contact-icon">
+                  <FiPhone />
+                </span>
+                <div className="t23-contact-text">{phone}</div>
+              </div>
 
-            {/* Skills */}
-            {knowledge.length > 0 || software.length > 0 ? (
-              <>
-                <h6 className="t23-section-title">Skills</h6>
-                <ul className="list-unstyled small">
-                  {knowledge.map((k, i) => (
-                    <li key={i}>{k?.knowledge?.knowledge_name}</li>
-                  ))}
-                  {software.map((s, i) => (
-                    <li key={i}>{s?.software?.software_name}</li>
-                  ))}
-                </ul>
-              </>
-            ) : null}
+              <div className="t23-contact-block">
+                <span className="t23-contact-icon">
+                  <FiMail />
+                </span>
+                <div className="t23-contact-text t23-email-one-line">{email}</div>
+              </div>
 
-            {/* Culture */}
-            {culture.length > 0 && (
-              <>
-                <h6 className="t23-section-title">Culture</h6>
-                <ul className="list-unstyled small">
-                  {culture.map((c, i) => (
-                    <li key={i}>{c?.culture?.culture_name}</li>
-                  ))}
-                </ul>
-              </>
-            )}
-          </Col>
+              <div className="t23-contact-block">
+                <span className="t23-contact-icon">
+                  <FiMapPin />
+                </span>
+                <div className="t23-contact-text">{location}</div>
+              </div>
 
-          {/* Right Content */}
-          <Col md={9} className="p-4">
-            {/* Experience */}
-            <h4 className="text-center fw-bold mb-5" style={{ color: BRAND }}>
-              Experience
-            </h4>
-            <div className="t23-timeline">
-              {experiences.length ? (
-                experiences.map((exp, i) => (
-                  <div
-                    key={i}
-                    className={`t23-entry ${
-                      i % 2 === 0 ? "t23-entry-left" : "t23-entry-right"
-                    }`}
-                  >
-                    <Card body className="t23-card">
-                      <div className="t23-date-pill">
-                        {formatMY(exp?.start_date)} –{" "}
-                        {formatMY(exp?.end_date) || "Present"}
-                      </div>
-                      <h6 className="fw-bold" style={{ color: BRAND }}>
-                        {exp?.position?.position_name || "—"}
-                      </h6>
-                      <div className="small text-muted mb-2">
-                        {exp?.employer?.employer_name || ""}
-                      </div>
-                      {exp?.responsibility && (
-                        <ul className="t23-duties">
-                          {exp.responsibility
-                            .split("\n")
-                            .map((t) => t.trim())
-                            .filter(Boolean)
-                            .map((t, k) => (
-                              <li key={k}>{t.replace(/^•\s*/, "")}</li>
-                            ))}
-                        </ul>
-                      )}
-                    </Card>
-                  </div>
-                ))
-              ) : (
-                <p className="text-muted text-center">
-                  No job experience available.
+              {website && (
+                <p className="small mb-0">
+                  <FiGlobe /> {website}
                 </p>
               )}
-            </div>
 
-            {/* Education */}
-            <h4 className="text-center fw-bold mb-4" style={{ color: BRAND }}>
-              Education
-            </h4>
-            {education.length ? (
-              <Table striped bordered hover responsive>
-                <thead style={{ background: BRAND, color: "#fff" }}>
-                  <tr>
-                    <th>Level / Degree</th>
-                    <th>Institution</th>
-                    <th>Start</th>
-                    <th>End</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {education.map((edu, i) => (
-                    <tr key={i}>
-                      <td>
-                        {edu?.level?.education_level || edu?.degree || "—"}
-                      </td>
-                      <td>
-                        {edu?.college?.college_name || edu?.institution || "—"}
-                      </td>
-                      <td>{formatMY(edu?.started)}</td>
-                      <td>{formatMY(edu?.ended) || "Present"}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </Table>
-            ) : (
-              <p className="text-muted text-center">
-                No education records available.
-              </p>
-            )}
+              <hr className="border-light my-4" />
+              <h6 className="fw-bold">Biography</h6>
+              <p className="small">{intro}</p>
 
-            {/* Referees */}
-            {referees.length > 0 && (
-              <>
-                <h4
-                  className="text-center fw-bold mb-4"
-                  style={{ color: BRAND }}
-                >
-                  Referees
-                </h4>
-                <Row>
-                  {referees.map((r, i) => {
-                    const rname = [r?.first_name, r?.middle_name, r?.last_name]
-                      .filter(Boolean)
-                      .join(" ");
-                    return (
-                      <Col md={4} key={i} className="mb-4">
-                        <div className="t23-ref-card">
-                          <strong>{rname || "—"}</strong>
-                          <div className="small text-muted">
-                            {r?.referee_position || "—"}
-                          </div>
-                          <div>{r?.employer || "—"}</div>
-                          <div className="small mt-2">{r?.phone || "—"}</div>
-                          <div className="small">{r?.email || "—"}</div>
+              {/* Languages */}
+              {languages.length > 0 && (
+                <>
+                  <h6 className="t23-section-title">Languages</h6>
+                  <ul className="list-unstyled small">
+                    {languages.map((l, i) => (
+                      <li key={i}>{l?.language?.language_name}</li>
+                    ))}
+                  </ul>
+                </>
+              )}
+
+              {/* Skills */}
+              {knowledge.length > 0 || software.length > 0 ? (
+                <>
+                  <h6 className="t23-section-title">Skills</h6>
+                  <ul className="list-unstyled small">
+                    {chipsSkills.map((name, i) => (
+                      <li key={`k-${i}`}>{name}</li>
+                    ))}
+                    {chipsSoftware.map((name, i) => (
+                      <li key={`s-${i}`}>{name}</li>
+                    ))}
+                  </ul>
+                </>
+              ) : null}
+
+              {/* Culture */}
+              {culture.length > 0 && (
+                <>
+                  <h6 className="t23-section-title">Culture</h6>
+                  <ul className="list-unstyled small">
+                    {chipsCulture.map((name, i) => (
+                      <li key={i}>{name}</li>
+                    ))}
+                  </ul>
+                </>
+              )}
+            </Col>
+
+            {/* Right Content */}
+            <Col md={9} className="p-4">
+              {/* Experience */}
+              <h4 className="text-center fw-bold mb-5" style={{ color: BRAND }}>
+                Experience
+              </h4>
+              <div className="t23-timeline">
+                {experiences.length ? (
+                  experiences.map((exp, i) => (
+                    <div
+                      key={i}
+                      className={`t23-entry ${
+                        i % 2 === 0 ? "t23-entry-left" : "t23-entry-right"
+                      }`}
+                    >
+                      <Card body className="t23-card">
+                        <div className="t23-date-pill">
+                          {formatMY(exp?.start_date)} –{" "}
+                          {formatMY(exp?.end_date) || "Present"}
                         </div>
-                      </Col>
-                    );
-                  })}
-                </Row>
-              </>
-            )}
-          </Col>
-        </Row>`1  1q22222`
-      </div>
+                        <h6 className="fw-bold" style={{ color: BRAND }}>
+                          {exp?.position?.position_name || "—"}
+                        </h6>
+                        <div className="small text-muted mb-2">
+                          {exp?.employer?.employer_name || ""}
+                        </div>
+                        {exp?.responsibility && (
+                          <ul className="t23-duties">
+                            {exp.responsibility
+                              .split("\n")
+                              .map((t) => t.trim())
+                              .filter(Boolean)
+                              .map((t, k) => (
+                                <li key={k}>{t.replace(/^•\s*/, "")}</li>
+                              ))}
+                          </ul>
+                        )}
+                      </Card>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-muted text-center">
+                    No job experience available.
+                  </p>
+                )}
+              </div>
+
+              {/* Education */}
+              <h4 className="text-center fw-bold mb-4" style={{ color: BRAND }}>
+                Education
+              </h4>
+              {education.length ? (
+                <Table striped bordered hover responsive>
+                  <thead style={{ background: BRAND, color: "#fff" }}>
+                    <tr>
+                      <th>Level / Degree</th>
+                      <th>Institution</th>
+                      <th>Start</th>
+                      <th>End</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {education.map((edu, i) => (
+                      <tr key={i}>
+                        <td>
+                          {edu?.level?.education_level || edu?.degree || "—"}
+                        </td>
+                        <td>
+                          {edu?.college?.college_name || edu?.institution || "—"}
+                        </td>
+                        <td>{formatMY(edu?.started)}</td>
+                        <td>{formatMY(edu?.ended) || "Present"}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </Table>
+              ) : (
+                <p className="text-muted text-center">
+                  No education records available.
+                </p>
+              )}
+
+              {/* Referees */}
+              {referees.length > 0 && (
+                <>
+                  <h4
+                    className="text-center fw-bold mb-4"
+                    style={{ color: BRAND }}
+                  >
+                    Referees
+                  </h4>
+                  <Row>
+                    {referees.map((r, i) => {
+                      const rname = [r?.first_name, r?.middle_name, r?.last_name]
+                        .filter(Boolean)
+                        .join(" ");
+                      return (
+                        <Col md={4} key={i} className="mb-4">
+                          <div className="t23-ref-card">
+                            <strong>{rname || "—"}</strong>
+                            <div className="small text-muted">
+                              {r?.referee_position || "—"}
+                            </div>
+                            <div>{r?.employer || "—"}</div>
+                            <div className="small mt-2">{r?.phone || "—"}</div>
+                            <div className="small">{r?.email || "—"}</div>
+                          </div>
+                        </Col>
+                      );
+                    })}
+                  </Row>
+                </>
+              )}
+            </Col>
+          </Row>
+        </div>
+      </Card>
     </Container>
   );
 }

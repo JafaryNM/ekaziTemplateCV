@@ -6,8 +6,8 @@ import { FiPhone, FiMail, FiMapPin, FiGlobe } from "react-icons/fi";
 import "bootstrap/dist/css/bootstrap.min.css";
 import moment from "moment";
 
-const cvUrl = "https://ekazi.co.tz";
-const API = "https://ekazi.co.tz/api/cv/cv_builder/30750";
+const cvUrl = "https://api.ekazi.co.tz";
+const API = "https://api.ekazi.co.tz/api/cv/cv_builder/30750";
 
 const BRAND = "#ca2b3d";
 const INK = "#333";
@@ -77,6 +77,52 @@ export default function Template23() {
     [profile]
   );
 
+  // ===== Flattened & Capitalized “chips” data =====
+  const chipsLanguages = languages
+    .map((l) =>
+      (l?.language?.language_name || l?.language_name || "")
+        .replace(/^,+/, "")
+        .toLowerCase()
+        .replace(/\b\w/g, (char) => char.toUpperCase())
+    )
+    .filter(Boolean);
+
+  const chipsSkills = knowledge
+    .map((k) =>
+      (k?.knowledge?.knowledge_name || k?.knowledge_name || "")
+        .replace(/^,+/, "")
+        .toLowerCase()
+        .replace(/\b\w/g, (char) => char.toUpperCase())
+    )
+    .filter(Boolean);
+
+  const chipsSoftware = software
+    .map((s) =>
+      (s?.software?.software_name || s?.software_name || "")
+        .replace(/^,+/, "")
+        .toLowerCase()
+        .replace(/\b\w/g, (char) => char.toUpperCase())
+    )
+    .filter(Boolean);
+
+  const chipsCulture = culture
+    .map((c) =>
+      (c?.culture?.culture_name || c?.culture_name || c?.name || "")
+        .replace(/^,+/, "")
+        .toLowerCase()
+        .replace(/\b\w/g, (char) => char.toUpperCase())
+    )
+    .filter(Boolean);
+
+  const chipsPersonality = personalities
+    .map((p) =>
+      (p?.personality?.personality_name || "")
+        .replace(/^,+/, "")
+        .toLowerCase()
+        .replace(/\b\w/g, (char) => char.toUpperCase())
+    )
+    .filter(Boolean);
+
   if (loading) {
     return (
       <div
@@ -98,7 +144,20 @@ export default function Template23() {
   }
 
   return (
-    <Container fluid className="t23-root p-0">
+    <Container
+      fluid
+      className="t23-root p-0"
+      style={{
+        width: "210mm",
+        minHeight: "297mm",
+        margin: "auto",
+        backgroundColor: "#000",
+        padding: "5mm",
+        fontFamily:
+          '"Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+        boxShadow: "0 0 5px rgba(0,0,0,0.2)",
+      }}
+    >
       {/* Font */}
       <link
         href="https://fonts.googleapis.com/css2?family=Marcellus&display=swap"
@@ -106,6 +165,8 @@ export default function Template23() {
       />
       <style>{`
         .t23-root { font-family: 'Marcellus', serif; color: ${INK}; line-height: 1.7; }
+        .a4-card { width: 100%; min-height: calc(297mm - 10mm); background: #fff; border-radius: 14px; overflow: hidden; }
+
         .t23-hero {
           text-align: center; background: #fff;
           border-bottom: 6px solid ${BRAND};
@@ -142,161 +203,179 @@ export default function Template23() {
           border-left: 3px solid ${BRAND}; padding-left: .75rem; margin-bottom: 1rem;
         }
 
+        /* chips: wrap + left aligned + no overflow */
         .t23-badge {
           background: linear-gradient(135deg, rgba(202,43,61,.15), rgba(202,43,61,.05));
-          color: ${BRAND}; font-size: .85rem; margin: .25rem;
-          border-radius: 20px; padding: .35rem 1rem; font-weight: 500;
+          color: ${BRAND};
+          font-size: .85rem;
+          margin: .25rem;
+          border-radius: 20px;
+          padding: .35rem 1rem;
+          font-weight: 500;
           box-shadow: 0 1px 3px rgba(0,0,0,.1);
+          max-width: 100%;
+          white-space: normal;
+          overflow-wrap: anywhere;
+          word-break: break-word;
+          text-align: left;
+          line-height: 1.2;
+          display: inline-block;
         }
       `}</style>
 
-      {/* Hero */}
-      <div className="t23-hero">
-        <div className="t23-name">{fullName}</div>
-        <div className="t23-sub">{currentPosition}</div>
-        <p className="t23-intro">{intro}</p>
-        <img
-          src={
-            profile?.picture
-              ? `${cvUrl}/${profile.picture}`
-              : "https://placehold.co/160x160?text=Photo"
-          }
-          alt="profile"
-          className="t23-photo"
-        />
-      </div>
+      <div className="a4-card">
+        {/* Hero */}
+        <div className="t23-hero">
+          <div className="t23-name">{fullName}</div>
+          <div className="t23-sub">{currentPosition}</div>
+          <p className="t23-intro">{intro}</p>
+          <img
+            src={
+              profile?.picture
+                ? `${cvUrl}/${profile.picture}`
+                : "https://placehold.co/160x160?text=Photo"
+            }
+            alt="profile"
+            className="t23-photo"
+            onError={(e) =>
+              (e.currentTarget.src = "https://placehold.co/160x160?text=Photo")
+            }
+          />
+        </div>
 
-      {/* Sections */}
-      <Container className="pb-5">
-        <Section title="Contact">
-          <p>
-            <FiPhone className="me-2" /> {phone}
-          </p>
-          <p>
-            <FiMail className="me-2" /> {email}
-          </p>
-          <p>
-            <FiMapPin className="me-2" /> {location}
-          </p>
-          {payload?.user?.[0]?.website && (
+        {/* Sections */}
+        <Container className="pb-5">
+          <Section title="Contact">
             <p>
-              <FiGlobe className="me-2" /> {payload?.user?.[0]?.website}
+              <FiPhone className="me-2" /> {phone}
             </p>
-          )}
-        </Section>
+            <p>
+              <FiMail className="me-2" /> {email}
+            </p>
+            <p>
+              <FiMapPin className="me-2" /> {location}
+            </p>
+            {payload?.user?.[0]?.website && (
+              <p>
+                <FiGlobe className="me-2" /> {payload?.user?.[0]?.website}
+              </p>
+            )}
+          </Section>
 
-        <Section title="Skills">
-          <div className="d-flex flex-wrap">
-            {knowledge.map((k, i) => (
-              <span key={i} className="t23-badge">
-                {k?.knowledge?.knowledge_name}
-              </span>
-            ))}
-            {software.map((s, i) => (
-              <span key={i} className="t23-badge">
-                {s?.software?.software_name}
-              </span>
-            ))}
-          </div>
-        </Section>
-
-        {languages.length > 0 && (
-          <Section title="Languages">
-            <div className="d-flex flex-wrap">
-              {languages.map((l, i) => (
-                <span key={i} className="t23-badge">
-                  {l?.language?.language_name}
+          <Section title="Skills">
+            <div className="d-flex flex-wrap justify-content-start">
+              {chipsSkills.map((txt, i) => (
+                <span key={`k-${i}`} className="t23-badge">
+                  {txt}
+                </span>
+              ))}
+              {chipsSoftware.map((txt, i) => (
+                <span key={`s-${i}`} className="t23-badge">
+                  {txt}
                 </span>
               ))}
             </div>
           </Section>
-        )}
 
-        {(culture.length > 0 || personalities.length > 0) && (
-          <Section title="Culture & Personality">
-            <div className="d-flex flex-wrap">
-              {culture.map((c, i) => (
-                <span key={i} className="t23-badge">
-                  {c?.culture?.culture_name}
-                </span>
-              ))}
-              {personalities.map((p, i) => (
-                <span key={i} className="t23-badge">
-                  {p?.personality?.personality_name}
-                </span>
-              ))}
-            </div>
-          </Section>
-        )}
-
-        <Section title="Experience">
-          {experiences.length ? (
-            experiences.map((exp, i) => (
-              <div key={i} className="t23-entry">
-                <div className="t23-entry-title">
-                  {exp?.position?.position_name || "—"}
-                </div>
-                <div className="t23-entry-sub">
-                  {exp?.employer?.employer_name || ""} |{" "}
-                  {formatMY(exp?.start_date)} –{" "}
-                  {formatMY(exp?.end_date) || "Present"}
-                </div>
-                {exp?.responsibility && (
-                  <ul className="small mt-1">
-                    {exp.responsibility
-                      .split("\n")
-                      .map(
-                        (t, k) =>
-                          t.trim() && <li key={k}>{t.replace(/^•\s*/, "")}</li>
-                      )}
-                  </ul>
-                )}
+          {chipsLanguages.length > 0 && (
+            <Section title="Languages">
+              <div className="d-flex flex-wrap justify-content-start">
+                {chipsLanguages.map((txt, i) => (
+                  <span key={i} className="t23-badge">
+                    {txt}
+                  </span>
+                ))}
               </div>
-            ))
-          ) : (
-            <p className="text-muted">No job experience available.</p>
+            </Section>
           )}
-        </Section>
 
-        <Section title="Education">
-          {education.length ? (
-            education.map((edu, i) => (
-              <div key={i} className="t23-entry">
-                <div className="t23-entry-title">
-                  {edu?.level?.education_level || edu?.degree || "—"}
-                </div>
-                <div className="t23-entry-sub">
-                  {edu?.college?.college_name || edu?.institution || ""} |{" "}
-                  {formatMY(edu?.started)} – {formatMY(edu?.ended) || "Present"}
-                </div>
+          {(chipsCulture.length > 0 || chipsPersonality.length > 0) && (
+            <Section title="Culture & Personality">
+              <div className="d-flex flex-wrap justify-content-start">
+                {chipsCulture.map((txt, i) => (
+                  <span key={`c-${i}`} className="t23-badge">
+                    {txt}
+                  </span>
+                ))}
+                {chipsPersonality.map((txt, i) => (
+                  <span key={`p-${i}`} className="t23-badge">
+                    {txt}
+                  </span>
+                ))}
               </div>
-            ))
-          ) : (
-            <p className="text-muted">No education records available.</p>
+            </Section>
           )}
-        </Section>
 
-        {referees.length > 0 && (
-          <Section title="Referees">
-            {referees.map((r, i) => {
-              const rname = [r?.first_name, r?.middle_name, r?.last_name]
-                .filter(Boolean)
-                .join(" ");
-              return (
-                <div key={i} className="">
-                  <strong>{rname || "—"}</strong>
-                  <div className="text-muted small">
-                    {r?.referee_position || "—"}
+          <Section title="Experience">
+            {experiences.length ? (
+              experiences.map((exp, i) => (
+                <div key={i} className="t23-entry">
+                  <div className="t23-entry-title">
+                    {exp?.position?.position_name || "—"}
                   </div>
-                  <div>{r?.employer || "—"}</div>
-                  <div className="small">{r?.phone || "—"}</div>
-                  <div className="small">{r?.email || "—"}</div>
+                  <div className="t23-entry-sub">
+                    {exp?.employer?.employer_name || ""} |{" "}
+                    {formatMY(exp?.start_date)} –{" "}
+                    {formatMY(exp?.end_date) || "Present"}
+                  </div>
+                  {exp?.responsibility && (
+                    <ul className="small mt-1">
+                      {exp.responsibility
+                        .split("\n")
+                        .map((t) => t.trim())
+                        .filter(Boolean)
+                        .map((t, k) => (
+                          <li key={k}>{t.replace(/^•\s*/, "")}</li>
+                        ))}
+                    </ul>
+                  )}
                 </div>
-              );
-            })}
+              ))
+            ) : (
+              <p className="text-muted">No job experience available.</p>
+            )}
           </Section>
-        )}
-      </Container>
+
+          <Section title="Education">
+            {education.length ? (
+              education.map((edu, i) => (
+                <div key={i} className="t23-entry">
+                  <div className="t23-entry-title">
+                    {edu?.level?.education_level || edu?.degree || "—"}
+                  </div>
+                  <div className="t23-entry-sub">
+                    {edu?.college?.college_name || edu?.institution || ""} |{" "}
+                    {formatMY(edu?.started)} – {formatMY(edu?.ended) || "Present"}
+                  </div>
+                </div>
+              ))
+            ) : (
+              <p className="text-muted">No education records available.</p>
+            )}
+          </Section>
+
+          {referees.length > 0 && (
+            <Section title="Referees">
+              {referees.map((r, i) => {
+                const rname = [r?.first_name, r?.middle_name, r?.last_name]
+                  .filter(Boolean)
+                  .join(" ");
+                return (
+                  <div key={i} className="">
+                    <strong>{rname || "—"}</strong>
+                    <div className="text-muted small">
+                      {r?.referee_position || "—"}
+                    </div>
+                    <div>{r?.employer || "—"}</div>
+                    <div className="small">{r?.phone || "—"}</div>
+                    <div className="small">{r?.email || "—"}</div>
+                  </div>
+                );
+              })}
+            </Section>
+          )}
+        </Container>
+      </div>
     </Container>
   );
 }

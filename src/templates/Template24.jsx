@@ -14,8 +14,8 @@ import {
 import "bootstrap/dist/css/bootstrap.min.css";
 import moment from "moment";
 
-const cvUrl = "https://ekazi.co.tz";
-const API = "https://ekazi.co.tz/api/cv/cv_builder/30750";
+const cvUrl = "https://api.ekazi.co.tz";
+const API = "https://api.ekazi.co.tz/api/cv/cv_builder/30750";
 
 const BRAND = "#0095d2";
 const INK = "#222";
@@ -85,6 +85,52 @@ export default function Template24() {
     [profile]
   );
 
+  // ===== Flattened & Capitalized “chips” data =====
+  const chipsLanguages = languages
+    .map((l) =>
+      (l?.language?.language_name || l?.language_name || "")
+        .replace(/^,+/, "")
+        .toLowerCase()
+        .replace(/\b\w/g, (char) => char.toUpperCase())
+    )
+    .filter(Boolean);
+
+  const chipsSkills = knowledge
+    .map((k) =>
+      (k?.knowledge?.knowledge_name || k?.knowledge_name || "")
+        .replace(/^,+/, "")
+        .toLowerCase()
+        .replace(/\b\w/g, (char) => char.toUpperCase())
+    )
+    .filter(Boolean);
+
+  const chipsSoftware = software
+    .map((s) =>
+      (s?.software?.software_name || s?.software_name || "")
+        .replace(/^,+/, "")
+        .toLowerCase()
+        .replace(/\b\w/g, (char) => char.toUpperCase())
+    )
+    .filter(Boolean);
+
+  const chipsCulture = culture
+    .map((c) =>
+      (c?.culture?.culture_name || c?.culture_name || c?.name || "")
+        .replace(/^,+/, "")
+        .toLowerCase()
+        .replace(/\b\w/g, (char) => char.toUpperCase())
+    )
+    .filter(Boolean);
+
+  const chipsPersonality = personalities
+    .map((p) =>
+      (p?.personality?.personality_name || "")
+        .replace(/^,+/, "")
+        .toLowerCase()
+        .replace(/\b\w/g, (char) => char.toUpperCase())
+    )
+    .filter(Boolean);
+
   if (loading) {
     return (
       <div
@@ -106,7 +152,20 @@ export default function Template24() {
   }
 
   return (
-    <Container fluid className="t24-root p-0">
+    <Container
+      fluid
+      className="t24-root p-0"
+      style={{
+        width: "210mm",
+        minHeight: "297mm",
+        margin: "auto",
+        backgroundColor: "#000",
+        padding: "5mm",
+        fontFamily:
+          '"Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+        boxShadow: "0 0 5px rgba(0,0,0,0.2)",
+      }}
+    >
       {/* Font */}
       <link
         href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600;700&display=swap"
@@ -114,6 +173,7 @@ export default function Template24() {
       />
       <style>{`
         .t24-root { font-family: 'Noto Sans', sans-serif; color: ${INK}; }
+        .a4-card { width: 100%; min-height: calc(297mm - 10mm); background: #fff; }
 
         /* Hero */
         .t24-hero { background: ${BRAND}; color: #fff; padding: 3rem 2rem 5rem; position: relative; }
@@ -149,6 +209,12 @@ export default function Template24() {
           padding: .4rem .9rem; border-radius: 20px;
           font-size: .85rem; font-weight: 600; margin: .25rem;
           display: inline-block; box-shadow: 0 1px 3px rgba(0,0,0,.1);
+          max-width: 100%;
+          white-space: normal;
+          overflow-wrap: anywhere;
+          word-break: break-word;
+          text-align: left;
+          line-height: 1.2;
         }
 
         /* Referees */
@@ -159,179 +225,183 @@ export default function Template24() {
         }
       `}</style>
 
-      {/* Hero */}
-      <div className="t24-hero">
-        <h1 className="t24-name">{fullName}</h1>
-        <div className="t24-sub">{currentPosition}</div>
-        <p className="t24-intro">{intro}</p>
-        <img
-          src={
-            profile?.picture
-              ? `${cvUrl}/${profile.picture}`
-              : "https://placehold.co/160x160?text=Photo"
-          }
-          alt="profile"
-          className="t24-photo"
-        />
-      </div>
+      <div className="a4-card rounded-3 overflow-hidden">
+        {/* Hero */}
+        <div className="t24-hero">
+          <h1 className="t24-name">{fullName}</h1>
+          <div className="t24-sub">{currentPosition}</div>
+          <p className="t24-intro">{intro}</p>
+          <img
+            src={
+              profile?.picture
+                ? `${cvUrl}/${profile.picture}`
+                : "https://placehold.co/160x160?text=Photo"
+            }
+            alt="profile"
+            className="t24-photo"
+            onError={(e) =>
+              (e.currentTarget.src = "https://placehold.co/160x160?text=Photo")
+            }
+          />
+        </div>
 
-      {/* Body */}
-      <Container className="py-5">
-        <Row>
-          {/* Left */}
-          <Col md={4}>
-            <div className="t24-section">
-              <h5 className="t24-section-title">
-                <FiUser /> Contact
-              </h5>
-              <p>
-                <FiPhone className="me-2" /> {phone}
-              </p>
-              <p>
-                <FiMail className="me-2" /> {email}
-              </p>
-              <p>
-                <FiMapPin className="me-2" /> {location}
-              </p>
-              {payload?.user?.[0]?.website && (
-                <p>
-                  <FiGlobe className="me-2" /> {payload?.user?.[0]?.website}
-                </p>
-              )}
-            </div>
-
-            <div className="t24-section">
-              <h5 className="t24-section-title">
-                <FiBriefcase /> Skills
-              </h5>
-              {knowledge.map((k, i) => (
-                <span key={i} className="t24-badge">
-                  {k?.knowledge?.knowledge_name}
-                </span>
-              ))}
-              {software.map((s, i) => (
-                <span key={i} className="t24-badge">
-                  {s?.software?.software_name}
-                </span>
-              ))}
-            </div>
-
-            {languages.length > 0 && (
+        {/* Body */}
+        <Container className="py-5">
+          <Row>
+            {/* Left */}
+            <Col md={4}>
               <div className="t24-section">
                 <h5 className="t24-section-title">
-                  <FiGlobe /> Languages
+                  <FiUser /> Contact
                 </h5>
-                {languages.map((l, i) => (
-                  <span key={i} className="t24-badge">
-                    {l?.language?.language_name}
-                  </span>
-                ))}
+                <p>
+                  <FiPhone className="me-2" /> {phone}
+                </p>
+                <p>
+                  <FiMail className="me-2" /> {email}
+                </p>
+                <p>
+                  <FiMapPin className="me-2" /> {location}
+                </p>
+                {payload?.user?.[0]?.website && (
+                  <p>
+                    <FiGlobe className="me-2" /> {payload?.user?.[0]?.website}
+                  </p>
+                )}
               </div>
-            )}
 
-            {(culture.length > 0 || personalities.length > 0) && (
               <div className="t24-section">
-                <h5 className="t24-section-title">Culture & Personality</h5>
-                {culture.map((c, i) => (
-                  <span key={i} className="t24-badge">
-                    {c?.culture?.culture_name}
+                <h5 className="t24-section-title">
+                  <FiBriefcase /> Skills
+                </h5>
+                {chipsSkills.map((txt, i) => (
+                  <span key={`k-${i}`} className="t24-badge">
+                    {txt}
                   </span>
                 ))}
-                {personalities.map((p, i) => (
-                  <span key={i} className="t24-badge">
-                    {p?.personality?.personality_name}
+                {chipsSoftware.map((txt, i) => (
+                  <span key={`s-${i}`} className="t24-badge">
+                    {txt}
                   </span>
                 ))}
               </div>
-            )}
-          </Col>
 
-          {/* Right */}
-          <Col md={8}>
-            <div className="t24-section">
-              <h5 className="t24-section-title">
-                <FiBriefcase /> Experience
-              </h5>
-              {experiences.length ? (
-                experiences.map((exp, i) => (
-                  <div key={i} className="t24-entry">
-                    <div className="t24-entry-title">
-                      {exp?.position?.position_name || "—"}
-                    </div>
-                    <div className="t24-entry-sub">
-                      {exp?.employer?.employer_name || ""} |{" "}
-                      {formatMY(exp?.start_date)} –{" "}
-                      {formatMY(exp?.end_date) || "Present"}
-                    </div>
-                    {exp?.responsibility && (
-                      <ul className="small mt-1">
-                        {exp.responsibility
-                          .split("\n")
-                          .map(
-                            (t, k) =>
-                              t.trim() && (
-                                <li key={k}>{t.replace(/^•\s*/, "")}</li>
-                              )
-                          )}
-                      </ul>
-                    )}
-                  </div>
-                ))
-              ) : (
-                <p className="text-muted">No job experience available.</p>
+              {chipsLanguages.length > 0 && (
+                <div className="t24-section">
+                  <h5 className="t24-section-title">
+                    <FiGlobe /> Languages
+                  </h5>
+                  {chipsLanguages.map((txt, i) => (
+                    <span key={i} className="t24-badge">
+                      {txt}
+                    </span>
+                  ))}
+                </div>
               )}
-            </div>
 
-            <div className="t24-section">
-              <h5 className="t24-section-title">
-                <FiBook /> Education
-              </h5>
-              {education.length ? (
-                education.map((edu, i) => (
-                  <div key={i} className="t24-entry">
-                    <div className="t24-entry-title">
-                      {edu?.level?.education_level || edu?.degree || "—"}
-                    </div>
-                    <div className="t24-entry-sub">
-                      {edu?.college?.college_name || edu?.institution || ""} |{" "}
-                      {formatMY(edu?.started)} –{" "}
-                      {formatMY(edu?.ended) || "Present"}
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <p className="text-muted">No education records available.</p>
+              {(chipsCulture.length > 0 || chipsPersonality.length > 0) && (
+                <div className="t24-section">
+                  <h5 className="t24-section-title">Culture & Personality</h5>
+                  {chipsCulture.map((txt, i) => (
+                    <span key={`c-${i}`} className="t24-badge">
+                      {txt}
+                    </span>
+                  ))}
+                  {chipsPersonality.map((txt, i) => (
+                    <span key={`p-${i}`} className="t24-badge">
+                      {txt}
+                    </span>
+                  ))}
+                </div>
               )}
-            </div>
+            </Col>
 
-            {referees.length > 0 && (
+            {/* Right */}
+            <Col md={8}>
               <div className="t24-section">
-                <h5 className="t24-section-title">Referees</h5>
-                <Row>
-                  {referees.map((r, i) => {
-                    const rname = [r?.first_name, r?.middle_name, r?.last_name]
-                      .filter(Boolean)
-                      .join(" ");
-                    return (
-                      <Col md={6} key={i}>
-                        <Card className="t24-ref-card">
-                          <strong>{rname || "—"}</strong>
-                          <div className="text-muted small">
-                            {r?.referee_position || "—"}
-                          </div>
-                          <div>{r?.employer || "—"}</div>
-                          <div className="small">{r?.phone || "—"}</div>
-                          <div className="small">{r?.email || "—"}</div>
-                        </Card>
-                      </Col>
-                    );
-                  })}
-                </Row>
+                <h5 className="t24-section-title">
+                  <FiBriefcase /> Experience
+                </h5>
+                {experiences.length ? (
+                  experiences.map((exp, i) => (
+                    <div key={i} className="t24-entry">
+                      <div className="t24-entry-title">
+                        {exp?.position?.position_name || "—"}
+                      </div>
+                      <div className="t24-entry-sub">
+                        {exp?.employer?.employer_name || ""} |{" "}
+                        {formatMY(exp?.start_date)} –{" "}
+                        {formatMY(exp?.end_date) || "Present"}
+                      </div>
+                      {exp?.responsibility && (
+                        <ul className="small mt-1">
+                          {exp.responsibility
+                            .split("\n")
+                            .map((t) => t.trim())
+                            .filter(Boolean)
+                            .map((t, k) => (
+                              <li key={k}>{t.replace(/^•\s*/, "")}</li>
+                            ))}
+                        </ul>
+                      )}
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-muted">No job experience available.</p>
+                )}
               </div>
-            )}
-          </Col>
-        </Row>
-      </Container>
+
+              <div className="t24-section">
+                <h5 className="t24-section-title">
+                  <FiBook /> Education
+                </h5>
+                {education.length ? (
+                  education.map((edu, i) => (
+                    <div key={i} className="t24-entry">
+                      <div className="t24-entry-title">
+                        {edu?.level?.education_level || edu?.degree || "—"}
+                      </div>
+                      <div className="t24-entry-sub">
+                        {edu?.college?.college_name || edu?.institution || ""} |{" "}
+                        {formatMY(edu?.started)} –{" "}
+                        {formatMY(edu?.ended) || "Present"}
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-muted">No education records available.</p>
+                )}
+              </div>
+
+              {referees.length > 0 && (
+                <div className="t24-section">
+                  <h5 className="t24-section-title">Referees</h5>
+                  <Row>
+                    {referees.map((r, i) => {
+                      const rname = [r?.first_name, r?.middle_name, r?.last_name]
+                        .filter(Boolean)
+                        .join(" ");
+                      return (
+                        <Col md={6} key={i}>
+                          <Card className="t24-ref-card">
+                            <strong>{rname || "—"}</strong>
+                            <div className="text-muted small">
+                              {r?.referee_position || "—"}
+                            </div>
+                            <div>{r?.employer || "—"}</div>
+                            <div className="small">{r?.phone || "—"}</div>
+                            <div className="small">{r?.email || "—"}</div>
+                          </Card>
+                        </Col>
+                      );
+                    })}
+                  </Row>
+                </div>
+              )}
+            </Col>
+          </Row>
+        </Container>
+      </div>
     </Container>
   );
 }
