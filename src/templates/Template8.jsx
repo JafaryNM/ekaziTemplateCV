@@ -356,6 +356,7 @@ const Template8 = () => {
         .contact-list li span{
           flex: 1;
           word-break: break-word;
+          font-size:12px;
         }
       `}</style>
 
@@ -389,7 +390,9 @@ const Template8 = () => {
             />
           </Col>
           <Col>
-            <div className="text-uppercase small text-muted">{currentTitle}</div>
+            <div className="text-uppercase small text-muted">
+              {currentTitle}
+            </div>
             <h2 className="fw-bold mb-1" style={{ color: BRAND_DARK }}>
               {fullName}
             </h2>
@@ -402,7 +405,7 @@ const Template8 = () => {
               }}
               className="mb-2"
             />
-            <div className="small text-muted">
+            <div className="text text-muted">
               <FiPhone /> {primaryPhone} &nbsp; | &nbsp;
               <FiMail /> {primaryEmail} &nbsp; | &nbsp;
               <FiMapPin /> {primaryAddress}
@@ -477,7 +480,10 @@ const Template8 = () => {
                     .join(" ");
                   return (
                     <div key={i} className="mb-3">
-                      <div className="fw-semibold" style={{ color: BRAND_DARK }}>
+                      <div
+                        className="fw-semibold"
+                        style={{ color: BRAND_DARK }}
+                      >
                         {name || "—"}
                       </div>
                       <div className="small text-muted mb-1">
