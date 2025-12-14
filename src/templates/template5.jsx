@@ -14,8 +14,8 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { FiMail, FiPhone, FiMapPin, FiGlobe, FiLinkedin } from "react-icons/fi";
 import moment from "moment";
 
-const API = "https://ekazi.co.tz/api/cv/cv_builder/30750";
-const CV_BASE = "https://ekazi.co.tz";
+const API = "https://api.ekazi.co.tz/api/cv/cv_builder/30750";
+const CV_BASE = "https://api.ekazi.co.tz";
 
 // Brand + UI
 const BRAND = "#D36314";
@@ -319,12 +319,18 @@ export default function Template5() {
                 <div className="small text-muted">
                   {culture.length
                     ? culture
-                        .map(
-                          (c) =>
+                        .map((c) => {
+                          const name =
                             c?.culture?.culture_name ||
                             c?.culture_name ||
-                            c?.name
-                        )
+                            c?.name ||
+                            "";
+
+                          return name
+                            .replace(/^,+/, "") // remove leading commas if any
+                            .toLowerCase()
+                            .replace(/\b\w/g, (char) => char.toUpperCase());
+                        })
                         .filter(Boolean)
                         .join(", ")
                     : "—"}
@@ -335,7 +341,14 @@ export default function Template5() {
                 <div className="small text-muted">
                   {personalities.length
                     ? personalities
-                        .map((p) => p?.personality?.personality_name)
+                        .map((p) => {
+                          const name = p?.personality?.personality_name || "";
+
+                          return name
+                            .replace(/^,+/, "") // remove leading commas if any
+                            .toLowerCase()
+                            .replace(/\b\w/g, (char) => char.toUpperCase());
+                        })
                         .filter(Boolean)
                         .join(", ")
                     : "—"}
@@ -346,9 +359,17 @@ export default function Template5() {
                 <div className="small text-muted">
                   {software.length
                     ? software
-                        .map(
-                          (s) => s?.software?.software_name || s?.software_name
-                        )
+                        .map((s) => {
+                          const name =
+                            s?.software?.software_name ||
+                            s?.software_name ||
+                            "";
+
+                          return name
+                            .replace(/^,+/, "") // clean leading commas
+                            .toLowerCase()
+                            .replace(/\b\w/g, (char) => char.toUpperCase());
+                        })
                         .filter(Boolean)
                         .join(", ")
                     : "—"}
@@ -359,10 +380,17 @@ export default function Template5() {
                 <div className="small text-muted">
                   {knowledge.length
                     ? knowledge
-                        .map(
-                          (k) =>
-                            k?.knowledge?.knowledge_name || k?.knowledge_name
-                        )
+                        .map((k) => {
+                          const name =
+                            k?.knowledge?.knowledge_name ||
+                            k?.knowledge_name ||
+                            "";
+
+                          return name
+                            .replace(/^,+/, "")
+                            .toLowerCase()
+                            .replace(/\b\w/g, (char) => char.toUpperCase());
+                        })
                         .filter(Boolean)
                         .join(", ")
                     : "—"}
@@ -376,12 +404,17 @@ export default function Template5() {
           <div className="small text-muted mb-4">
             {Array.isArray(tools) && tools.length
               ? tools
-                  .map(
-                    (t) =>
+                  .map((t) => {
+                    const name =
                       t?.tool?.tool_name ||
                       t?.tool_name ||
-                      (typeof t === "string" ? t : "")
-                  )
+                      (typeof t === "string" ? t : "");
+
+                    return name
+                      .replace(/^,+/, "") // remove leading commas if any
+                      .toLowerCase()
+                      .replace(/\b\w/g, (char) => char.toUpperCase());
+                  })
                   .filter(Boolean)
                   .join(", ")
               : "—"}
