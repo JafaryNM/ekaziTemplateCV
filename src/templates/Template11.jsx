@@ -96,6 +96,52 @@ export default function Template11() {
     return m.isValid() ? m.format("MMM YYYY") : "—";
   };
 
+  // ===== Flattened & Capitalized “chips” data =====
+  const chipsCulture = culture
+    .map((c) =>
+      (c?.culture?.culture_name || c?.culture_name || c?.name || "")
+        .replace(/^,+/, "")
+        .toLowerCase()
+        .replace(/\b\w/g, (char) => char.toUpperCase())
+    )
+    .filter(Boolean);
+
+  const chipsPersonality = personalities
+    .map((p) =>
+      (p?.personality?.personality_name || "")
+        .replace(/^,+/, "")
+        .toLowerCase()
+        .replace(/\b\w/g, (char) => char.toUpperCase())
+    )
+    .filter(Boolean);
+
+  const chipsSoftware = software
+    .map((s) =>
+      (s?.software?.software_name || s?.software_name || "")
+        .replace(/^,+/, "")
+        .toLowerCase()
+        .replace(/\b\w/g, (char) => char.toUpperCase())
+    )
+    .filter(Boolean);
+
+  const chipsSkills = knowledge
+    .map((k) =>
+      (k?.knowledge?.knowledge_name || k?.knowledge_name || "")
+        .replace(/^,+/, "")
+        .toLowerCase()
+        .replace(/\b\w/g, (char) => char.toUpperCase())
+    )
+    .filter(Boolean);
+
+  const chipsLanguages = languages
+    .map((l) =>
+      (l?.language?.language_name || l?.language_name || "")
+        .replace(/^,+/, "")
+        .toLowerCase()
+        .replace(/\b\w/g, (char) => char.toUpperCase())
+    )
+    .filter(Boolean);
+
   return (
     <Container
       fluid
@@ -227,7 +273,7 @@ export default function Template11() {
 
                   <SidebarSection title="Languages">
                     <SkillChips
-                      items={languages}
+                      items={chipsLanguages}
                       keyName="language"
                       nestedKey="language_name"
                     />
@@ -235,7 +281,7 @@ export default function Template11() {
 
                   <SidebarSection title="Skills">
                     <SkillChips
-                      items={knowledge}
+                      items={chipsSkills}
                       keyName="knowledge"
                       nestedKey="knowledge_name"
                     />
@@ -243,7 +289,7 @@ export default function Template11() {
 
                   <SidebarSection title="Software">
                     <SkillChips
-                      items={software}
+                      items={chipsSoftware}
                       keyName="software"
                       nestedKey="software_name"
                     />
@@ -251,12 +297,12 @@ export default function Template11() {
 
                   <SidebarSection title="Culture & Personality">
                     <SkillChips
-                      items={culture}
+                      items={chipsCulture}
                       keyName="culture"
                       nestedKey="culture_name"
                     />
                     <SkillChips
-                      items={personalities}
+                      items={chipsPersonality}
                       keyName="personality"
                       nestedKey="personality_name"
                     />
@@ -312,7 +358,9 @@ export default function Template11() {
                       </Card>
                     ))
                   ) : (
-                    <div className="text-secondary">No job experience added.</div>
+                    <div className="text-secondary">
+                      No job experience added.
+                    </div>
                   )}
                 </Section>
 
@@ -332,7 +380,9 @@ export default function Template11() {
                           {edu?.level?.education_level || edu?.degree || "—"}
                         </div>
                         <div className="text-muted">
-                          {edu?.college?.college_name || edu?.institution || "—"}
+                          {edu?.college?.college_name ||
+                            edu?.institution ||
+                            "—"}
                         </div>
                         <div className="small text-muted">
                           {formatMY(edu?.started)} – {formatMY(edu?.ended)}
@@ -349,7 +399,11 @@ export default function Template11() {
                 {referees.length > 0 && (
                   <Section title="Referees">
                     {referees.map((r, i) => {
-                      const fullName = [r.first_name, r.middle_name, r.last_name]
+                      const fullName = [
+                        r.first_name,
+                        r.middle_name,
+                        r.last_name,
+                      ]
                         .filter(Boolean)
                         .join(" ");
                       return (
@@ -423,7 +477,7 @@ function SkillChips({ items, keyName, nestedKey }) {
             margin: "0.2em",
           }}
         >
-          {it?.[keyName]?.[nestedKey] || "Skill"}
+          {typeof it === "string" ? it : it?.[keyName]?.[nestedKey] || "Skill"}
         </Badge>
       ))}
     </div>
