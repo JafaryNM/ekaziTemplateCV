@@ -14,8 +14,8 @@ import {
 import "bootstrap/dist/css/bootstrap.min.css";
 import { FiMail, FiPhone, FiMapPin, FiGlobe, FiLinkedin } from "react-icons/fi";
 
-const API = "https://ekazi.co.tz/api/cv/cv_builder/30750";
-const CV_BASE = "https://ekazi.co.tz";
+const API = "https://api.ekazi.co.tz/api/cv/cv_builder/30750";
+const CV_BASE = "https://api.ekazi.co.tz";
 const BRAND = "#dc3545";
 const BRAND_DARK = "#c10d3dff";
 const PAPER = "#ffffff";
