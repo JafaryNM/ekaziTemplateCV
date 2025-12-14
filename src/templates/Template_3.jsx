@@ -13,8 +13,8 @@ import {
 import { FiMail, FiPhone, FiMapPin } from "react-icons/fi";
 import moment from "moment";
 
-const API = "https://ekazi.co.tz/api/cv/cv_builder/30750";
-const CV_BASE = "https://ekazi.co.tz";
+const API = "https://api.ekazi.co.tz/api/cv/cv_builder/30750";
+const CV_BASE = "https://api.ekazi.co.tz";
 const BRAND = "#1756a5";
 const BRAND_DARK = "#0e3668";
 const BRAND_LIGHT = "#e6eef8";
@@ -241,7 +241,9 @@ export default function Template3() {
                   <ul className="mb-0 ps-3">
                     {knowledge.map((k, i) => (
                       <li key={`k-${i}`} className="mb-1">
-                        {k?.knowledge?.knowledge_name}
+                        {(k?.knowledge?.knowledge_name || "")
+                          .toLowerCase()
+                          .replace(/\b\w/g, (char) => char.toUpperCase())}
                       </li>
                     ))}
                   </ul>
@@ -255,7 +257,9 @@ export default function Template3() {
                   <ul className="mb-0 ps-3">
                     {software.map((s, i) => (
                       <li key={`s-${i}`} className="mb-1">
-                        {s?.software?.software_name}
+                        {(s?.software?.software_name || "")
+                          .toLowerCase()
+                          .replace(/\b\w/g, (char) => char.toUpperCase())}
                       </li>
                     ))}
                   </ul>
@@ -270,7 +274,10 @@ export default function Template3() {
                   <ul className="mb-0 ps-3">
                     {culture.map((c, i) => (
                       <li key={`c-${i}`} className="mb-1">
-                        {c?.culture?.culture_name || c?.name || c}
+                        {/* {c?.culture?.culture_name || c?.name || c} */}
+                        {(c?.culture?.culture_name || "")
+                          .toLowerCase()
+                          .replace(/\b\w/g, (char) => char.toUpperCase())}
                       </li>
                     ))}
                   </ul>
@@ -296,7 +303,10 @@ export default function Template3() {
                   <ul className="mb-0 ps-3">
                     {personalities.map((p, i) => (
                       <li key={`p-${i}`} className="mb-1">
-                        {p?.personality?.personality_name}
+                        {/* {p?.personality?.personality_name} */}
+                        {(p?.personality?.personality_name || "")
+                          .toLowerCase()
+                          .replace(/\b\w/g, (char) => char.toUpperCase())}
                       </li>
                     ))}
                   </ul>

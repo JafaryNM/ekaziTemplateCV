@@ -297,7 +297,6 @@ export default function Template2() {
                           .toLowerCase()
                           .replace(/\b\w/g, (char) => char.toUpperCase())}
                       </span>
-                      ))}
                     </div>
                   </div>
                 )}
