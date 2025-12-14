@@ -1,4 +1,4 @@
-// Template18.jsx — Split Banner CV with Vertical Accent + Brand #007d84 + Plus Jakarta Sans
+// Template16.jsx — Split Banner CV with Vertical Accent + Brand #007d84 + Plus Jakarta Sans
 import { useEffect, useState } from "react";
 import {
   Container,
@@ -21,8 +21,8 @@ import {
 import "bootstrap/dist/css/bootstrap.min.css";
 import moment from "moment";
 
-const cvUrl = "https://ekazi.co.tz";
-const API = "https://ekazi.co.tz/api/cv/cv_builder/30750";
+const cvUrl = "https://api.ekazi.co.tz";
+const API = "https://api.ekazi.co.tz/api/cv/cv_builder/30750";
 const BRAND = "#007d84";
 
 /* Helpers */
@@ -101,14 +101,101 @@ export default function Template16() {
     experiences?.[0]?.position?.position_name ||
     "—";
 
+  // ===== Flattened & Capitalized “chips” data =====
+  const chipsLanguages = languages
+    .map((l) =>
+      (l?.language?.language_name || l?.language_name || "")
+        .replace(/^,+/, "")
+        .toLowerCase()
+        .replace(/\b\w/g, (char) => char.toUpperCase())
+    )
+    .filter(Boolean);
+
+  const chipsSkills = knowledge
+    .map((k) =>
+      (k?.knowledge?.knowledge_name || k?.knowledge_name || "")
+        .replace(/^,+/, "")
+        .toLowerCase()
+        .replace(/\b\w/g, (char) => char.toUpperCase())
+    )
+    .filter(Boolean);
+
+  const chipsSoftware = software
+    .map((s) =>
+      (s?.software?.software_name || s?.software_name || "")
+        .replace(/^,+/, "")
+        .toLowerCase()
+        .replace(/\b\w/g, (char) => char.toUpperCase())
+    )
+    .filter(Boolean);
+
+  const chipsCulture = culture
+    .map((c) =>
+      (c?.culture?.culture_name || c?.culture_name || c?.name || "")
+        .replace(/^,+/, "")
+        .toLowerCase()
+        .replace(/\b\w/g, (char) => char.toUpperCase())
+    )
+    .filter(Boolean);
+
+  const chipsPersonality = personalities
+    .map((p) =>
+      (p?.personality?.personality_name || "")
+        .replace(/^,+/, "")
+        .toLowerCase()
+        .replace(/\b\w/g, (char) => char.toUpperCase())
+    )
+    .filter(Boolean);
+
   return (
-    <Container fluid className="my-4">
+    <Container
+      fluid
+      className="p-0"
+      style={{
+        width: "210mm",
+        minHeight: "297mm",
+        margin: "auto",
+        backgroundColor: "#000",
+        padding: "5mm",
+        fontFamily:
+          '"Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+        boxShadow: "0 0 5px rgba(0,0,0,0.2)",
+      }}
+    >
       <link
         href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap"
         rel="stylesheet"
       />
+      <style>{`
+        .a4-card { width: 100%; min-height: calc(297mm - 10mm); }
+
+        /* keep badges inside sidebar width (no overflow) + left aligned */
+        .chip-badge{
+          max-width: 100%;
+          white-space: normal !important;
+          overflow-wrap: anywhere;
+          word-break: break-word;
+          text-align: left;
+          line-height: 1.2;
+          display: inline-block;
+          vertical-align: top;
+        }
+
+        /* ✅ Reduce font ONLY inside Contact section so email/phone/location fit */
+        .contact-section p{
+          font-size: 0.85rem;
+          margin-bottom: .45rem;
+          line-height: 1.25;
+          word-break: break-word;
+          overflow-wrap: anywhere;
+        }
+        .contact-section svg{
+          flex-shrink: 0;
+        }
+      `}</style>
+
       <Card
-        className="border-0 shadow-lg overflow-hidden"
+        className="border-0 shadow-lg overflow-hidden a4-card"
         style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
       >
         {/* Split Banner */}
@@ -169,7 +256,7 @@ export default function Template16() {
             <Row>
               {/* Sidebar info */}
               <Col md={4}>
-                <Section title="Contact">
+                <Section title="Contact" className="contact-section">
                   <p>
                     <FiPhone className="me-2" /> {phone}
                   </p>
@@ -181,16 +268,17 @@ export default function Template16() {
                   </p>
                 </Section>
 
-                {languages.length > 0 && (
+                {chipsLanguages.length > 0 && (
                   <Section title="Languages">
                     <div className="d-flex flex-wrap gap-2">
-                      {languages.map((l, i) => (
+                      {chipsLanguages.map((txt, i) => (
                         <Badge
                           key={i}
                           pill
+                          className="chip-badge"
                           style={{ backgroundColor: BRAND, color: "#fff" }}
                         >
-                          {l?.language?.language_name}
+                          {txt}
                         </Badge>
                       ))}
                     </div>
@@ -199,30 +287,42 @@ export default function Template16() {
 
                 <Section title="Skills">
                   <div className="d-flex flex-wrap gap-2">
-                    {knowledge.map((k, i) => (
-                      <Badge key={i} pill bg="secondary">
-                        {k?.knowledge?.knowledge_name}
+                    {chipsSkills.map((txt, i) => (
+                      <Badge key={i} pill bg="secondary" className="chip-badge">
+                        {txt}
                       </Badge>
                     ))}
-                    {software.map((s, i) => (
-                      <Badge key={i} pill bg="dark">
-                        {s?.software?.software_name}
+                    {chipsSoftware.map((txt, i) => (
+                      <Badge key={i} pill bg="dark" className="chip-badge">
+                        {txt}
                       </Badge>
                     ))}
                   </div>
                 </Section>
 
-                {(culture.length > 0 || personalities.length > 0) && (
+                {(chipsCulture.length > 0 || chipsPersonality.length > 0) && (
                   <Section title="Culture & Personality">
                     <div className="d-flex flex-wrap gap-2">
-                      {culture.map((c, i) => (
-                        <Badge key={i} pill bg="info" text="dark">
-                          {c?.culture?.culture_name}
+                      {chipsCulture.map((txt, i) => (
+                        <Badge
+                          key={i}
+                          pill
+                          bg="info"
+                          text="dark"
+                          className="chip-badge"
+                        >
+                          {txt}
                         </Badge>
                       ))}
-                      {personalities.map((p, i) => (
-                        <Badge key={i} pill bg="warning" text="dark">
-                          {p?.personality?.personality_name}
+                      {chipsPersonality.map((txt, i) => (
+                        <Badge
+                          key={i}
+                          pill
+                          bg="warning"
+                          text="dark"
+                          className="chip-badge"
+                        >
+                          {txt}
                         </Badge>
                       ))}
                     </div>
@@ -244,9 +344,7 @@ export default function Template16() {
                   {education.length ? (
                     <Timeline items={education} isExperience={false} />
                   ) : (
-                    <p className="text-muted">
-                      No education records available.
-                    </p>
+                    <p className="text-muted">No education records available.</p>
                   )}
                 </Section>
 
@@ -287,9 +385,9 @@ export default function Template16() {
   );
 }
 
-function Section({ title, children }) {
+function Section({ title, children, className = "" }) {
   return (
-    <div className="mb-4">
+    <div className={`mb-4 ${className}`}>
       <h5 className="fw-bold mb-2" style={{ color: BRAND }}>
         {title}
       </h5>
@@ -322,9 +420,9 @@ function Timeline({ items, isExperience }) {
           {item?.responsibility && (
             <ul className="small mt-2 mb-0 ps-3">
               {item.responsibility
-                .split("\n") // split lines
-                .map((t) => t.trim()) // trim whitespace
-                .filter(Boolean) // remove empty lines
+                .split("\n")
+                .map((t) => t.trim())
+                .filter(Boolean)
                 .map((t, k) => (
                   <li key={k}>{t.replace(/^•\s*/, "")}</li>
                 ))}
