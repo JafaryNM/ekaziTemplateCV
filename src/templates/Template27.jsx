@@ -12,9 +12,8 @@ import {
 import "bootstrap/dist/css/bootstrap.min.css";
 import moment from "moment";
 
-const cvUrl = "https://ekazi.co.tz";
-const API = "https://ekazi.co.tz/api/cv/cv_builder/30750";
-
+const cvUrl = "https://api.ekazi.co.tz";
+const API = "https://api.ekazi.co.tz/api/cv/cv_builder/30750";
 const BRAND = "#224559";
 const INK = "#222";
 
@@ -54,6 +53,7 @@ export default function Template27() {
   const software = payload?.software ?? [];
   const culture = payload?.culture ?? [];
   const personalities = payload?.applicant_personality ?? [];
+  const tools = payload?.tools ?? [];
 
   const phone =
     payload?.phone?.phone_number || payload?.user?.[0]?.phone || "—";
@@ -83,6 +83,62 @@ export default function Template27() {
     [profile]
   );
 
+  // ===== Flattened & Capitalized “chips” data =====
+  const chipsLanguages = languages
+    .map((l) =>
+      (l?.language?.language_name || l?.language_name || "")
+        .replace(/^,+/, "")
+        .toLowerCase()
+        .replace(/\b\w/g, (char) => char.toUpperCase())
+    )
+    .filter(Boolean);
+
+  const chipsSkills = knowledge
+    .map((k) =>
+      (k?.knowledge?.knowledge_name || k?.knowledge_name || "")
+        .replace(/^,+/, "")
+        .toLowerCase()
+        .replace(/\b\w/g, (char) => char.toUpperCase())
+    )
+    .filter(Boolean);
+
+  const chipsSoftware = software
+    .map((s) =>
+      (s?.software?.software_name || s?.software_name || "")
+        .replace(/^,+/, "")
+        .toLowerCase()
+        .replace(/\b\w/g, (char) => char.toUpperCase())
+    )
+    .filter(Boolean);
+
+  // (kept for consistency / future use)
+  const chipsCulture = culture
+    .map((c) =>
+      (c?.culture?.culture_name || c?.culture_name || c?.name || "")
+        .replace(/^,+/, "")
+        .toLowerCase()
+        .replace(/\b\w/g, (char) => char.toUpperCase())
+    )
+    .filter(Boolean);
+
+  const chipsPersonality = personalities
+    .map((p) =>
+      (p?.personality?.personality_name || "")
+        .replace(/^,+/, "")
+        .toLowerCase()
+        .replace(/\b\w/g, (char) => char.toUpperCase())
+    )
+    .filter(Boolean);
+
+  const chipsTools = tools
+    .map((t) =>
+      (t?.tool?.tool_name || t?.tool_name || "")
+        .replace(/^,+/, "")
+        .toLowerCase()
+        .replace(/\b\w/g, (char) => char.toUpperCase())
+    )
+    .filter(Boolean);
+
   if (loading) {
     return (
       <div
@@ -104,7 +160,20 @@ export default function Template27() {
   }
 
   return (
-    <Container fluid className="t27-root p-0">
+    <Container
+      fluid
+      className="p-0"
+      style={{
+        width: "210mm",
+        minHeight: "297mm",
+        margin: "auto",
+        backgroundColor: "#000",
+        padding: "5mm",
+        fontFamily:
+          '"Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+        boxShadow: "0 0 5px rgba(0,0,0,0.2)",
+      }}
+    >
       {/* Font */}
       <link
         href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;700&display=swap"
@@ -112,6 +181,7 @@ export default function Template27() {
       />
       <style>{`
         .t27-root { font-family: 'Rubik', sans-serif; color: ${INK}; background: #f5f7fa; }
+        .a4-card { width: 100%; min-height: calc(297mm - 10mm); }
 
         /* Header */
         .t27-header {
@@ -144,6 +214,36 @@ export default function Template27() {
           margin-bottom: 1.2rem; box-shadow: 0 2px 8px rgba(0,0,0,.05);
         }
 
+        /* >>> CONTACT ONLY: icon on top, value below <<< */
+        .t27-contact-card { }
+        .t27-contact-stack {
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+        }
+        .t27-contact-item {
+          display: flex;
+          flex-direction: column;
+          gap: 6px;
+        }
+        .t27-contact-icon {
+          width: 26px;
+          height: 26px;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 8px;
+          border: 1px solid rgba(34, 69, 89, 0.25);
+          background: rgba(34, 69, 89, 0.08);
+          color: ${BRAND};
+        }
+        .t27-contact-text {
+          font-size: 0.9rem;
+          line-height: 1.25;
+          word-break: break-word;
+          overflow-wrap: anywhere;
+        }
+
         /* Timeline */
         .t27-timeline { position: relative; margin-left: 1rem; }
         .t27-timeline::before {
@@ -164,191 +264,227 @@ export default function Template27() {
           background: ${BRAND}; color: #fff; margin: .2rem;
           padding: .3rem .7rem; border-radius: 20px; font-size: .8rem;
           font-weight: 500;
+          white-space: normal !important;
+          overflow-wrap: anywhere;
+          word-break: break-word;
+          text-align: left;
+          max-width: 100%;
+          display: inline-block;
+          line-height: 1.2;
         }
       `}</style>
 
-      {/* Header */}
-      <div className="t27-header">
-        <div className="t27-name">{fullName}</div>
-        <div className="t27-role">{currentPosition}</div>
-        <p className="t27-intro">{intro}</p>
-        <img
-          src={
-            profile?.picture
-              ? `${cvUrl}/${profile.picture}`
-              : "https://placehold.co/150x150?text=Photo"
-          }
-          alt="profile"
-          className="t27-photo"
-        />
-      </div>
+      <div className="t27-root a4-card rounded-3 overflow-hidden">
+        {/* Header */}
+        <div className="t27-header">
+          <div className="t27-name">{fullName}</div>
+          <div className="t27-role">{currentPosition}</div>
+          <p className="t27-intro">{intro}</p>
+          <img
+            src={
+              profile?.picture
+                ? `${cvUrl}/${profile.picture}`
+                : "https://placehold.co/150x150?text=Photo"
+            }
+            alt="profile"
+            className="t27-photo"
+          />
+        </div>
 
-      {/* Body */}
-      <Container className="t27-body">
-        <Row className="g-4">
-          {/* Sidebar */}
-          <Col md={4}>
-            <div className="t27-side-card">
-              <h4>Contact</h4>
-              <p>
-                <FiPhone className="me-2" /> {phone}
-              </p>
-              <p>
-                <FiMail className="me-2" /> {email}
-              </p>
-              <p>
-                <FiMapPin className="me-2" /> {location}
-              </p>
-              {payload?.user?.[0]?.website && (
-                <p>
-                  <FiGlobe className="me-2" /> {payload?.user?.[0]?.website}
-                </p>
+        {/* Body */}
+        <Container className="t27-body">
+          <Row className="g-4">
+            {/* Sidebar */}
+            <Col md={4}>
+              <div className="t27-side-card t27-contact-card">
+                <h4>Contact</h4>
+
+                <div className="t27-contact-stack">
+                  <div className="t27-contact-item">
+                    <span className="t27-contact-icon">
+                      <FiPhone />
+                    </span>
+                    <div className="t27-contact-text">{phone}</div>
+                  </div>
+
+                  <div className="t27-contact-item">
+                    <span className="t27-contact-icon">
+                      <FiMail />
+                    </span>
+                    <div className="t27-contact-text">{email}</div>
+                  </div>
+
+                  <div className="t27-contact-item">
+                    <span className="t27-contact-icon">
+                      <FiMapPin />
+                    </span>
+                    <div className="t27-contact-text">{location}</div>
+                  </div>
+
+                  {payload?.user?.[0]?.website && (
+                    <div className="t27-contact-item">
+                      <span className="t27-contact-icon">
+                        <FiGlobe />
+                      </span>
+                      <div className="t27-contact-text">
+                        {payload?.user?.[0]?.website}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="t27-side-card">
+                <h4>Skills</h4>
+                <div className="d-flex flex-wrap">
+                  {chipsSkills.map((txt, i) => (
+                    <Badge key={i} className="t27-badge">
+                      {txt}
+                    </Badge>
+                  ))}
+                  {chipsSoftware.map((txt, i) => (
+                    <Badge key={i} className="t27-badge">
+                      {txt}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+
+              {chipsLanguages.length > 0 && (
+                <div className="t27-side-card">
+                  <h4>Languages</h4>
+                  <div className="d-flex flex-wrap">
+                    {chipsLanguages.map((txt, i) => (
+                      <Badge key={i} className="t27-badge">
+                        {txt}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
               )}
-            </div>
 
-            <div className="t27-side-card">
-              <h4>Skills</h4>
-              <div className="d-flex flex-wrap">
-                {knowledge.map((k, i) => (
-                  <Badge key={i} className="t27-badge">
-                    {k?.knowledge?.knowledge_name}
-                  </Badge>
-                ))}
-                {software.map((s, i) => (
-                  <Badge key={i} className="t27-badge">
-                    {s?.software?.software_name}
-                  </Badge>
-                ))}
-              </div>
-            </div>
-
-            {languages.length > 0 && (
-              <div className="t27-side-card">
-                <h4>Languages</h4>
-                <div className="d-flex flex-wrap">
-                  {languages.map((l, i) => (
-                    <Badge key={i} className="t27-badge">
-                      {l?.language?.language_name}
-                    </Badge>
-                  ))}
+              {(chipsCulture.length > 0 || chipsPersonality.length > 0) && (
+                <div className="t27-side-card">
+                  <h4>Culture & Personality</h4>
+                  <div className="d-flex flex-wrap">
+                    {chipsCulture.map((txt, i) => (
+                      <Badge key={i} className="t27-badge">
+                        {txt}
+                      </Badge>
+                    ))}
+                    {chipsPersonality.map((txt, i) => (
+                      <Badge key={i} className="t27-badge">
+                        {txt}
+                      </Badge>
+                    ))}
+                    {chipsTools.map((txt, i) => (
+                      <Badge key={i} className="t27-badge">
+                        {txt}
+                      </Badge>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
+            </Col>
 
-            {(culture.length > 0 || personalities.length > 0) && (
-              <div className="t27-side-card">
-                <h4>Culture & Personality</h4>
-                <div className="d-flex flex-wrap">
-                  {culture.map((c, i) => (
-                    <Badge key={i} className="t27-badge">
-                      {c?.culture?.culture_name}
-                    </Badge>
-                  ))}
-                  {personalities.map((p, i) => (
-                    <Badge key={i} className="t27-badge">
-                      {p?.personality?.personality_name}
-                    </Badge>
-                  ))}
-                </div>
-              </div>
-            )}
-          </Col>
-
-          {/* Main Content */}
-          <Col md={8}>
-            <div className="t27-section">
-              <h4>
-                <FiBriefcase className="me-2" /> Experience
-              </h4>
-              <div className="t27-timeline">
-                {experiences.length ? (
-                  experiences.map((exp, i) => (
-                    <div key={i} className="t27-item">
-                      <div className="t27-dot"></div>
-                      <div className="date">
-                        {formatMY(exp?.start_date)} –{" "}
-                        {exp?.end_date ? formatMY(exp?.end_date) : "Present"}
-                      </div>
-                      <div className="title">
-                        {exp?.position?.position_name || "—"}
-                      </div>
-                      <div className="sub">
-                        {exp?.employer?.employer_name || ""}
-                      </div>
-                      {exp?.responsibility && (
-                        <ul className="small">
-                          {exp.responsibility
-                            .split("\n")
-                            .map(
-                              (t, k) =>
-                                t.trim() && (
-                                  <li key={k}>{t.replace(/^•\s*/, "")}</li>
-                                )
-                            )}
-                        </ul>
-                      )}
-                    </div>
-                  ))
-                ) : (
-                  <p className="text-muted">No job experience available.</p>
-                )}
-              </div>
-            </div>
-
-            <div className="t27-section">
-              <h4>
-                <FiBookOpen className="me-2" /> Education
-              </h4>
-              <div className="t27-timeline">
-                {education.length ? (
-                  education.map((edu, i) => (
-                    <div key={i} className="t27-item">
-                      <div className="t27-dot"></div>
-                      <div className="date">
-                        {formatMY(edu?.started)} –{" "}
-                        {edu?.ended ? formatMY(edu?.ended) : "Present"}
-                      </div>
-                      <div className="title">
-                        {edu?.level?.education_level || edu?.degree || "—"}
-                      </div>
-                      <div className="sub">
-                        {edu?.college?.college_name || edu?.institution || ""}
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <p className="text-muted">No education records available.</p>
-                )}
-              </div>
-            </div>
-
-            {referees.length > 0 && (
+            {/* Main Content */}
+            <Col md={8}>
               <div className="t27-section">
-                <h4>Referees</h4>
-                {referees.map((r, i) => {
-                  const rname = [r?.first_name, r?.middle_name, r?.last_name]
-                    .filter(Boolean)
-                    .join(" ");
-                  return (
-                    <div key={i} className="t27-item">
-                      <div className="t27-dot"></div>
-                      <div>
-                        <strong>{rname || "—"}</strong>
+                <h4>
+                  <FiBriefcase className="me-2" /> Experience
+                </h4>
+                <div className="t27-timeline">
+                  {experiences.length ? (
+                    experiences.map((exp, i) => (
+                      <div key={i} className="t27-item">
+                        <div className="t27-dot"></div>
+                        <div className="date">
+                          {formatMY(exp?.start_date)} –{" "}
+                          {exp?.end_date ? formatMY(exp?.end_date) : "Present"}
+                        </div>
+                        <div className="title">
+                          {exp?.position?.position_name || "—"}
+                        </div>
+                        <div className="sub">
+                          {exp?.employer?.employer_name || ""}
+                        </div>
+                        {exp?.responsibility && (
+                          <ul className="small">
+                            {exp.responsibility
+                              .split("\n")
+                              .map(
+                                (t, k) =>
+                                  t.trim() && (
+                                    <li key={k}>{t.replace(/^•\s*/, "")}</li>
+                                  )
+                              )}
+                          </ul>
+                        )}
                       </div>
-                      <div className="text-muted small">
-                        {r?.referee_position || "—"}
-                      </div>
-                      <div>{r?.employer || "—"}</div>
-                      <div className="small">{r?.phone || "—"}</div>
-                      <div className="small">{r?.email || "—"}</div>
-                    </div>
-                  );
-                })}
+                    ))
+                  ) : (
+                    <p className="text-muted">No job experience available.</p>
+                  )}
+                </div>
               </div>
-            )}
-          </Col>
-        </Row>
-      </Container>
+
+              <div className="t27-section">
+                <h4>
+                  <FiBookOpen className="me-2" /> Education
+                </h4>
+                <div className="t27-timeline">
+                  {education.length ? (
+                    education.map((edu, i) => (
+                      <div key={i} className="t27-item">
+                        <div className="t27-dot"></div>
+                        <div className="date">
+                          {formatMY(edu?.started)} –{" "}
+                          {edu?.ended ? formatMY(edu?.ended) : "Present"}
+                        </div>
+                        <div className="title">
+                          {edu?.level?.education_level || edu?.degree || "—"}
+                        </div>
+                        <div className="sub">
+                          {edu?.college?.college_name ||
+                            edu?.institution ||
+                            ""}
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-muted">No education records available.</p>
+                  )}
+                </div>
+              </div>
+
+              {referees.length > 0 && (
+                <div className="t27-section">
+                  <h4>Referees</h4>
+                  {referees.map((r, i) => {
+                    const rname = [r?.first_name, r?.middle_name, r?.last_name]
+                      .filter(Boolean)
+                      .join(" ");
+                    return (
+                      <div key={i} className="t27-item">
+                        <div className="t27-dot"></div>
+                        <div>
+                          <strong>{rname || "—"}</strong>
+                        </div>
+                        <div className="text-muted small">
+                          {r?.referee_position || "—"}
+                        </div>
+                        <div>{r?.employer || "—"}</div>
+                        <div className="small">{r?.phone || "—"}</div>
+                        <div className="small">{r?.email || "—"}</div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </Col>
+          </Row>
+        </Container>
+      </div>
     </Container>
   );
 }

@@ -292,11 +292,13 @@ export default function Template2() {
                   <div className="mb-2">
                     <div className="fw-semibold mb-1">Personality</div>
                     <div className="d-flex flex-wrap gap-2">
-                      <span key={i} className="badge badge-accent">
-                        {(p?.personality?.personality_name || "")
-                          .toLowerCase()
-                          .replace(/\b\w/g, (char) => char.toUpperCase())}
-                      </span>
+                      {personalities.map((p, i) => (
+                        <span key={i} className="badge badge-accent">
+                          {(p?.personality?.personality_name || "")
+                            .toLowerCase()
+                            .replace(/\b\w/g, (char) => char.toUpperCase())}
+                        </span>
+                      ))}
                     </div>
                   </div>
                 )}

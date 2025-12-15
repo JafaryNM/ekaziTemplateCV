@@ -1,4 +1,4 @@
-// Template9.jsx — React-Bootstrap based, system-ui font stack
+// Template9.jsx — React-Bootstrap based, system-ui font stack (A4 fixed + Capitalized chips)
 import { useEffect, useState } from "react";
 import {
   Container,
@@ -12,8 +12,16 @@ import {
 import "bootstrap/dist/css/bootstrap.min.css";
 import moment from "moment";
 
-const cvUrl = "https://ekazi.co.tz";
-const API = "https://ekazi.co.tz/api/cv/cv_builder/30750";
+const cvUrl = "https://api.ekazi.co.tz";
+const API = "https://api.ekazi.co.tz/api/cv/cv_builder/30750";
+
+function toTitleCaseChip(v) {
+  return (v || "")
+    .replace(/^,+/, "")
+    .trim()
+    .toLowerCase()
+    .replace(/\b\w/g, (char) => char.toUpperCase());
+}
 
 export default function Template9() {
   const [payload, setPayload] = useState(null);
@@ -91,6 +99,37 @@ export default function Template9() {
     payload?.experience?.[0]?.position?.position_name ||
     "—";
 
+  // ===== Flattened & Capitalized “chips” data =====
+  const chipsLanguages = languages
+    .map((l) => toTitleCaseChip(l?.language?.language_name || l?.language_name))
+    .filter(Boolean);
+
+  const chipsSkills = knowledge
+    .map((k) =>
+      toTitleCaseChip(k?.knowledge?.knowledge_name || k?.knowledge_name)
+    )
+    .filter(Boolean);
+
+  const chipsSoftware = software
+    .map((s) =>
+      toTitleCaseChip(s?.software?.software_name || s?.software_name)
+    )
+    .filter(Boolean);
+
+  const chipsCulture = culture
+    .map((c) =>
+      toTitleCaseChip(c?.culture?.culture_name || c?.culture_name || c?.name)
+    )
+    .filter(Boolean);
+
+  const chipsPersonality = personalities
+    .map((p) =>
+      toTitleCaseChip(
+        p?.personality?.personality_name || p?.personality_name || p?.name
+      )
+    )
+    .filter(Boolean);
+
   // Helpers
   const formatMY = (d) => {
     const m = moment(d);
@@ -102,14 +141,52 @@ export default function Template9() {
   };
 
   return (
-    <Container className="my-4">
-      <Card
-        className="shadow border-0"
-        style={{
-          fontFamily:
-            "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji",
-        }}
-      >
+    <div
+      className="t9-page"
+      style={{
+        width: "210mm",
+        minHeight: "297mm",
+        margin: "0 auto",
+        padding: "5mm",
+        background: "#fff",
+        boxSizing: "border-box",
+        fontFamily:
+          "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji",
+      }}
+    >
+      <style>{`
+        .t9-card {
+          width: 100%;
+          min-height: calc(297mm - 10mm);
+          border-radius: 14px;
+          overflow: hidden;
+          box-shadow: 0 8px 22px rgba(0,0,0,.10);
+          box-sizing: border-box;
+        }
+
+        /* Keep contact line clean + prevent awkward email breaks */
+        .t9-contact {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 10px;
+          font-size: 0.85rem;
+          opacity: .85;
+        }
+        .t9-contact span { white-space: nowrap; }
+
+        /* Badges: wrap nicely inside A4 sidebar */
+        .t9-badge {
+          white-space: normal !important;
+          overflow-wrap: anywhere;
+          word-break: break-word;
+          text-align: left;
+          max-width: 100%;
+          display: inline-block;
+          line-height: 1.2;
+        }
+      `}</style>
+
+      <Card className="t9-card shadow border-0">
         {/* ===== Header ===== */}
         <Card.Header
           className="text-white"
@@ -134,6 +211,7 @@ export default function Template9() {
                 style={{ width: "160px", height: "160px", objectFit: "cover" }}
               />
             </Col>
+
             <Col md={9} className="text-md-start text-center">
               <h1 className="fw-bold mb-0">
                 {`${profile.first_name || ""} ${profile.middle_name || ""} ${
@@ -141,70 +219,75 @@ export default function Template9() {
                 }`.trim() || "—"}
               </h1>
               <h5 className="fw-medium opacity-75">{currentPosition}</h5>
-              <div className="mt-2 small opacity-75">
-                {location} | {phone} | {email}
+
+              <div className="t9-contact mt-2">
+                <span>{location}</span>
+                <span>•</span>
+                <span>{phone}</span>
+                <span>•</span>
+                <span>{email}</span>
               </div>
             </Col>
           </Row>
         </Card.Header>
 
         {/* ===== Body ===== */}
-        <Card.Body>
+        <Card.Body className="p-4">
           <Row className="g-4">
             {/* Left Column */}
             <Col md={4}>
               <Section title="Profile">{intro}</Section>
 
               <Section title="Languages">
-                {languages.length
-                  ? languages.map((l, i) => (
-                      <Badge bg="secondary" key={i} className="me-1 mb-1">
-                        {l?.language?.language_name || "Language"}
+                {chipsLanguages.length
+                  ? chipsLanguages.map((txt, i) => (
+                      <Badge bg="secondary" key={i} className="me-1 mb-1 t9-badge">
+                        {txt}
                       </Badge>
                     ))
                   : "—"}
               </Section>
 
-              <Section title="SKILLS">
-                {knowledge.length
-                  ? knowledge.map((k, i) => (
-                      <Badge bg="info" key={i} className="me-1 mb-1">
-                        {k?.knowledge?.knowledge_name}
+              <Section title="Skills">
+                {chipsSkills.length
+                  ? chipsSkills.map((txt, i) => (
+                      <Badge bg="info" key={i} className="me-1 mb-1 t9-badge">
+                        {txt}
                       </Badge>
                     ))
                   : "—"}
               </Section>
 
               <Section title="Software">
-                {software.length
-                  ? software.map((s, i) => (
+                {chipsSoftware.length
+                  ? chipsSoftware.map((txt, i) => (
                       <Badge
                         bg="light"
                         text="dark"
                         key={i}
-                        className="me-1 mb-1"
+                        className="me-1 mb-1 t9-badge"
                       >
-                        {s?.software?.software_name}
+                        {txt}
                       </Badge>
                     ))
                   : "—"}
               </Section>
 
-              <Section title="CULTURE">
-                {culture.length
-                  ? culture.map((c, i) => (
-                      <Badge bg="warning" key={i} className="me-1 mb-1">
-                        {c?.culture?.culture_name}
+              <Section title="Culture">
+                {chipsCulture.length
+                  ? chipsCulture.map((txt, i) => (
+                      <Badge bg="warning" key={i} className="me-1 mb-1 t9-badge">
+                        {txt}
                       </Badge>
                     ))
                   : "—"}
               </Section>
 
               <Section title="Personality">
-                {personalities.length
-                  ? personalities.map((p, i) => (
-                      <Badge bg="dark" key={i} className="me-1 mb-1">
-                        {p?.personality?.personality_name}
+                {chipsPersonality.length
+                  ? chipsPersonality.map((txt, i) => (
+                      <Badge bg="dark" key={i} className="me-1 mb-1 t9-badge">
+                        {txt}
                       </Badge>
                     ))
                   : "—"}
@@ -213,7 +296,7 @@ export default function Template9() {
 
             {/* Right Column */}
             <Col md={8}>
-              <Section title="EXPERIENCE">
+              <Section title="Experience">
                 {experiences.length ? (
                   experiences.map((exp, i) => (
                     <div key={i} className="mb-4">
@@ -299,7 +382,7 @@ export default function Template9() {
           </Row>
         </Card.Body>
       </Card>
-    </Container>
+    </div>
   );
 }
 

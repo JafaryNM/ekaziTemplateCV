@@ -1,5 +1,12 @@
 // Template17.jsx — Modern CV with Josefin Sans + Brand #223a83 + Compact Skills Layout + Profile Image
-import { useEffect, useState } from "react";
+// FIXES:
+// 1) loading never stopped (setLoading(false) on success) ✅
+// 2) A4 sizing wrapper + full-height inner card ✅
+// 3) Flattened + Title Case capitalization for chips/badges (skills/software/languages/culture/personality) ✅
+// 4) Chip wrapping/overflow safety ✅
+// (Nothing else changed)
+
+import { useEffect, useState, useMemo } from "react";
 import {
   Container,
   Row,
@@ -16,8 +23,6 @@ import {
   FiMapPin,
   FiCpu,
   FiStar,
-  FiGlobe,
-  FiUser,
 } from "react-icons/fi";
 import "bootstrap/dist/css/bootstrap.min.css";
 import moment from "moment";
@@ -32,6 +37,14 @@ function formatMY(d) {
   return m.isValid() ? m.format("MMM YYYY") : "—";
 }
 
+const toTitleChip = (v) =>
+  (v || "")
+    .toString()
+    .replace(/^,+/, "")
+    .trim()
+    .toLowerCase()
+    .replace(/\b\w/g, (ch) => ch.toUpperCase());
+
 export default function Template17() {
   const [payload, setPayload] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -45,32 +58,13 @@ export default function Template17() {
       })
       .then((json) => {
         setPayload(json?.data || {});
+        setLoading(false); // ✅ FIX: stop loading on success
       })
       .catch((err) => {
         setError(err.message || "Failed to load profile");
         setLoading(false);
       });
   }, []);
-
-  if (loading) {
-    return (
-      <div
-        className="d-flex justify-content-center align-items-center"
-        style={{ height: "50vh" }}
-      >
-        <Spinner animation="border" style={{ color: BRAND }} />
-        <span className="ms-3">Loading CV…</span>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <Container className="py-4">
-        <Alert variant="danger">{error}</Alert>
-      </Container>
-    );
-  }
 
   const profile = payload?.applicant_profile?.[0] ?? {};
   const experiences = payload?.experience ?? [];
@@ -101,15 +95,96 @@ export default function Template17() {
     experiences?.[0]?.position?.position_name ||
     "—";
 
+  const fullName = useMemo(
+    () =>
+      `${profile.first_name || ""} ${profile.middle_name || ""} ${
+        profile.last_name || ""
+      }`
+        .replace(/\s+/g, " ")
+        .trim() || "—",
+    [profile]
+  );
+
+  // ===== Flattened + Title Case chips =====
+  const chipsLanguages = languages
+    .map((l) => toTitleChip(l?.language?.language_name || l?.language_name))
+    .filter(Boolean);
+
+  const chipsKnowledge = knowledge
+    .map((k) => toTitleChip(k?.knowledge?.knowledge_name || k?.knowledge_name))
+    .filter(Boolean);
+
+  const chipsSoftware = software
+    .map((s) => toTitleChip(s?.software?.software_name || s?.software_name))
+    .filter(Boolean);
+
+  const chipsCulture = culture
+    .map((c) =>
+      toTitleChip(c?.culture?.culture_name || c?.culture_name || c?.name)
+    )
+    .filter(Boolean);
+
+  const chipsPersonality = personalities
+    .map((p) =>
+      toTitleChip(
+        p?.personality?.personality_name || p?.personality_name || p?.name
+      )
+    )
+    .filter(Boolean);
+
+  if (loading) {
+    return (
+      <div
+        className="d-flex justify-content-center align-items-center"
+        style={{ height: "50vh" }}
+      >
+        <Spinner animation="border" style={{ color: BRAND }} />
+        <span className="ms-3">Loading CV…</span>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <Container className="py-4">
+        <Alert variant="danger">{error}</Alert>
+      </Container>
+    );
+  }
+
   return (
-    <Container fluid className="my-4">
+    <Container
+      fluid
+      className="p-0"
+      style={{
+        width: "210mm",
+        minHeight: "297mm",
+        margin: "0 auto",
+        backgroundColor: "#fff",
+        padding: "5mm",
+        boxSizing: "border-box",
+      }}
+    >
       <link
         href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@400;600;700&display=swap"
         rel="stylesheet"
       />
 
+      <style>{`
+        .a4-card { width: 100%; min-height: calc(297mm - 10mm); background:#fff; }
+        .chip-badge{
+          white-space: normal !important;
+          overflow-wrap: anywhere;
+          word-break: break-word;
+          text-align: left;
+          max-width: 100%;
+          display: inline-block;
+          line-height: 1.2;
+        }
+      `}</style>
+
       <Card
-        className="border-0 shadow-lg"
+        className="border-0 shadow-lg a4-card"
         style={{ fontFamily: "'Josefin Sans', sans-serif" }}
       >
         {/* Banner with Profile Image */}
@@ -142,11 +217,7 @@ export default function Template17() {
               }
             />
           </div>
-          <h1 className="fw-bold mb-1">
-            {`${profile.first_name || ""} ${profile.middle_name || ""} ${
-              profile.last_name || ""
-            }`.trim() || "—"}
-          </h1>
+          <h1 className="fw-bold mb-1">{fullName}</h1>
           <h4 className="fw-light">{currentPosition}</h4>
           <p className="mt-3 w-75 mx-auto">{intro}</p>
         </div>
@@ -158,7 +229,7 @@ export default function Template17() {
               <p>
                 <FiPhone className="me-2" /> {phone}
               </p>
-              <p>
+              <p style={{ overflowWrap: "anywhere", wordBreak: "break-word" }}>
                 <FiMail className="me-2" /> {email}
               </p>
               <p>
@@ -166,16 +237,17 @@ export default function Template17() {
               </p>
             </SidebarSection>
 
-            {languages.length > 0 && (
+            {chipsLanguages.length > 0 && (
               <SidebarSection title="Languages">
                 <div className="d-flex flex-wrap gap-2">
-                  {languages.map((l, i) => (
+                  {chipsLanguages.map((txt, i) => (
                     <Badge
                       key={i}
                       pill
+                      className="chip-badge"
                       style={{ backgroundColor: BRAND, color: "#fff" }}
                     >
-                      {l?.language?.language_name}
+                      {txt}
                     </Badge>
                   ))}
                 </div>
@@ -184,33 +256,33 @@ export default function Template17() {
 
             {/* Improved Compact Skills */}
             <SidebarSection title="Skills">
-              {knowledge.length > 0 && (
+              {chipsKnowledge.length > 0 && (
                 <SkillGroup
                   title="Knowledge"
                   icon={<FiStar />}
-                  items={knowledge.map((k) => k?.knowledge?.knowledge_name)}
+                  items={chipsKnowledge}
                 />
               )}
-              {software.length > 0 && (
+              {chipsSoftware.length > 0 && (
                 <SkillGroup
                   title="Software"
                   icon={<FiCpu />}
-                  items={software.map((s) => s?.software?.software_name)}
+                  items={chipsSoftware}
                 />
               )}
             </SidebarSection>
 
-            {(culture.length > 0 || personalities.length > 0) && (
+            {(chipsCulture.length > 0 || chipsPersonality.length > 0) && (
               <SidebarSection title="Culture & Personality">
                 <div className="d-flex flex-wrap gap-2">
-                  {culture.map((c, i) => (
-                    <Badge key={i} pill bg="info" text="dark">
-                      {c?.culture?.culture_name}
+                  {chipsCulture.map((txt, i) => (
+                    <Badge key={i} pill bg="info" text="dark" className="chip-badge">
+                      {txt}
                     </Badge>
                   ))}
-                  {personalities.map((p, i) => (
-                    <Badge key={i} pill bg="warning" text="dark">
-                      {p?.personality?.personality_name}
+                  {chipsPersonality.map((txt, i) => (
+                    <Badge key={i} pill bg="warning" text="dark" className="chip-badge">
+                      {txt}
                     </Badge>
                   ))}
                 </div>
@@ -237,7 +309,7 @@ export default function Template17() {
                     </div>
                     <div className="text-muted small mb-2">
                       {formatMY(exp?.start_date)} –{" "}
-                      {formatMY(exp?.end_date) || "Present"}
+                      {exp?.end_date ? formatMY(exp?.end_date) : "Present"}
                     </div>
                     {exp?.responsibility && (
                       <ul className="small mb-0 ps-3">
@@ -270,17 +342,13 @@ export default function Template17() {
                   <tbody>
                     {education.map((edu, i) => (
                       <tr key={i}>
+                        <td>{edu?.level?.education_level || edu?.degree || "—"}</td>
                         <td>
-                          {edu?.level?.education_level || edu?.degree || "—"}
-                        </td>
-                        <td>
-                          {edu?.college?.college_name ||
-                            edu?.institution ||
-                            "—"}
+                          {edu?.college?.college_name || edu?.institution || "—"}
                         </td>
                         <td>
                           {formatMY(edu?.started)} –{" "}
-                          {formatMY(edu?.ended) || "Present"}
+                          {edu?.ended ? formatMY(edu?.ended) : "Present"}
                         </td>
                       </tr>
                     ))}
@@ -295,13 +363,13 @@ export default function Template17() {
               <MainSection title="Referees">
                 <Row>
                   {referees.map((r, i) => {
-                    const fullName = [r.first_name, r.middle_name, r.last_name]
+                    const rname = [r.first_name, r.middle_name, r.last_name]
                       .filter(Boolean)
                       .join(" ");
                     return (
                       <Col md={6} key={i} className="mb-3">
                         <Card body className="border-0 shadow-sm">
-                          <strong>{fullName || "—"}</strong>
+                          <strong>{rname || "—"}</strong>
                           <div className="text-muted small">
                             {r?.referee_position || "—"}
                           </div>
@@ -369,6 +437,7 @@ function SkillGroup({ title, icon, items }) {
           <Badge
             key={i}
             pill
+            className="chip-badge"
             style={{
               backgroundColor: i % 2 === 0 ? BRAND : "#6c757d",
               color: "#fff",

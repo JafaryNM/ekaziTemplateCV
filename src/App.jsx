@@ -39,11 +39,12 @@ import Template17 from "./templates/Template17";
 import Template18 from "./templates/Template18";
 import Template31 from "./templates/Template31";
 import TemplateFormat from "./templates/TemplateFormat";
+import Template32 from "./templates/Template32";
 
 export default function App() {
   return (
     <ErrorBoundary>
-      <Template25 />
+      <Template25/>
     </ErrorBoundary>
   );
 }
